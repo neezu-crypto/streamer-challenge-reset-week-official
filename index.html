@@ -201,12 +201,12 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-    import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 
-    // Firebase 설정
     const firebaseConfig = {
         apiKey: "AIzaSyApnxX1RXQLG8kiX0mYSVroSp3eATF7Njk",
         authDomain: "streamer-challenge-rwo.firebaseapp.com",
+        databaseURL: "https://streamer-challenge-rwo-default-rtdb.firebaseio.com/", // 스크린샷의 주소 추가
         projectId: "streamer-challenge-rwo",
         storageBucket: "streamer-challenge-rwo.firebasestorage.app",
         messagingSenderId: "935818900229",
