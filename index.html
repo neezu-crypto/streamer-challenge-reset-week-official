@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스트리머의 도전: 리셋 위크 챌린지</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0046ff;
+            --secondary-color: #ffcc00;
+            --bg-color: #f4f7f9;
+            --card-bg: #ffffff;
+            --text-main: #333;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a1a1a, #333);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 5px solid var(--primary-color);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: -1px;
+        }
+
+        header p {
+            opacity: 0.8;
+            font-weight: 300;
+            margin-top: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: -30px auto 50px;
+            padding: 0 20px;
+        }
+
+        .prize-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            border: 2px solid var(--primary-color);
+        }
+
+        .prize-amount {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+
+        .prize-amount span {
+            font-size: 1.5rem;
+            color: #666;
+            margin-left: 5px;
+        }
+
+        .timer-badge {
+            display: inline-block;
+            background: #ff4757;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .rule-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .rule-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .rule-grid { grid-template-columns: 1fr; }
+        }
+
+        .rule-item {
+            padding: 20px;
+            border-radius: 15px;
+            background: #f9f9f9;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .rule-item h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-apply {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 40px auto 0;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .btn-apply:hover {
+            transform: translateY(-3px);
+            background: #0036cc;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .highlight {
+            color: #e67e22;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <p>The Streamer's Challenge</p>
+    <h1>스트리머의 도전: 리셋 위크</h1>
+</header>
+
+<div class="container">
+    <div class="prize-card">
+        <div class="timer-badge"><i class="fa-solid fa-stopwatch"></i> 남은 시간: 168:00:00</div>
+        <p>현재 누적 상금</p>
+        <div class="prize-amount">💎 100<span>개</span></div>
+        <p style="color: #666;">갱신될 때마다 <span class="highlight">+100개</span> (최대 1,000개)</p>
+    </div>
+
+    <div class="rule-section">
+        <h2 style="text-align: center; margin-bottom: 40px;">Challenge Rules</h2>
+        
+        <div class="rule-grid">
+            <div class="rule-item">
+                <h3><i class="fa-solid fa-check-to-slot"></i> 참여 조건</h3>
+                <p>SOOP 통합 검색에서 확인 가능하며, 과거에 해당 종목으로 <b>방송했던 스트리머</b>가 존재하는 종목이어야 합니다.</p>
+            </div>
+
+            <div class="rule-item">
+                <h3><i class="fa-solid fa-video"></i> 기록 증빙</h3>
+                <p>본인의 도전 기록이 담긴 <b>SOOP 다시보기 혹은 클립 링크</b>를 필수로 제출해야 관리자 승인이 가능합니다.</p>
+            </div>
+
+            <div class="rule-item">
+                <h3><i class="fa-solid fa-rotate"></i> 리셋 위크</h3>
+                <p>새로운 도전자가 기록을 경신하고 관리자가 승인하는 즉시, 상금 획득까지 남은 시간은 <b>다시 7일로 초기화</b>됩니다.</p>
+            </div>
+
+            <div class="rule-item">
+                <h3><i class="fa-solid fa-trophy"></i> 최종 승리</h3>
+                <p>마지막 기록 경신 이후 <b>일주일(168시간)</b> 동안 아무도 기록을 깨지 못하면 최종 승자가 되어 상금을 획득합니다.</p>
+            </div>
+        </div>
+
+        <a href="#" class="btn-apply">챌린지 도전 신청하기</a>
+    </div>
+</div>
+
+<footer>
+    &copy; 2026 스트리머의 도전: 리셋 위크 챌린지. All rights reserved.
+</footer>
+
+</body>
+</html>
