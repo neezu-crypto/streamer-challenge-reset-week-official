@@ -81,6 +81,7 @@
             font-weight: bold;
             font-size: 1.1rem;
             margin-bottom: 15px;
+            transition: background 0.3s;
         }
 
         .rule-section {
@@ -159,9 +160,9 @@
 
 <div class="container">
     <div class="prize-card">
-        <div class="timer-badge"><i class="fa-solid fa-stopwatch"></i> 남은 시간: 168:00:00</div>
+        <div class="timer-badge"><i class="fa-solid fa-stopwatch"></i> 연결 중...</div>
         <p>현재 누적 상금</p>
-        <div class="prize-amount">💎 100<span>개</span></div>
+        <div class="prize-amount">💎 --<span>개</span></div>
         <p style="color: #666;">갱신될 때마다 <span class="highlight">+100개</span> (최대 1,000개)</p>
     </div>
 
@@ -197,6 +198,80 @@
 <footer>
     &copy; 2026 스트리머의 도전: 리셋 위크 챌린지. All rights reserved.
 </footer>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+    import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+    // Firebase 설정
+    const firebaseConfig = {
+        apiKey: "AIzaSyApnxX1RXQLG8kiX0mYSVroSp3eATF7Njk",
+        authDomain: "streamer-challenge-rwo.firebaseapp.com",
+        projectId: "streamer-challenge-rwo",
+        storageBucket: "streamer-challenge-rwo.firebasestorage.app",
+        messagingSenderId: "935818900229",
+        appId: "1:935818900229:web:7c8a0f57244eb712d9fd6c",
+        measurementId: "G-BMMMRWSDD2"
+    };
+
+    // Firebase 초기화
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 문서 참조 및 UI 요소 선택
+    const challengeDocRef = doc(db, "challenges", "current_challenge");
+    const prizeAmountEl = document.querySelector('.prize-amount');
+    const timerBadgeEl = document.querySelector('.timer-badge');
+
+    let countdownInterval;
+
+    // 실시간 데이터 감시
+    onSnapshot(challengeDocRef, (docSnap) => {
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            
+            // 상금 업데이트
+            if (data.prize !== undefined) {
+                prizeAmountEl.innerHTML = `💎 ${data.prize.toLocaleString()}<span>개</span>`;
+            }
+
+            // 타이머 업데이트
+            if (data.expiryDate) {
+                if (countdownInterval) clearInterval(countdownInterval);
+                startCountdown(data.expiryDate);
+            }
+        } else {
+            timerBadgeEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> 데이터 없음`;
+        }
+    });
+
+    // 카운트다운 로직
+    function startCountdown(expiryTimestamp) {
+        const targetDate = expiryTimestamp.toDate();
+
+        const updateTimer = () => {
+            const now = new Date();
+            const diff = targetDate - now;
+
+            if (diff <= 0) {
+                clearInterval(countdownInterval);
+                timerBadgeEl.style.background = "#2ed573";
+                timerBadgeEl.innerHTML = `<i class="fa-solid fa-flag-checkered"></i> 챌린지 종료 (기록 검증 중)`;
+                return;
+            }
+
+            const totalHours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            timerBadgeEl.style.background = "#ff4757";
+            timerBadgeEl.innerHTML = `<i class="fa-solid fa-stopwatch"></i> 남은 시간: ${String(totalHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        };
+
+        countdownInterval = setInterval(updateTimer, 1000);
+        updateTimer();
+    }
+</script>
 
 </body>
 </html>
