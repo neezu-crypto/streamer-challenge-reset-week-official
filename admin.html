@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>리셋 위크 - 관리자 패널</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Pretendard', sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .admin-card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        h1 { color: #0046ff; margin-bottom: 20px; font-size: 1.5rem; }
+        .info-group { background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: left; }
+        .info-group p { margin: 5px 0; font-size: 0.9rem; color: #666; }
+        .info-group b { color: #333; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; margin-top: 10px; }
+        .btn-google { background: #4285F4; color: white; }
+        .btn-update { background: #0046ff; color: white; }
+        .btn-reset { background: #ff4757; color: white; }
+        .btn-logout { background: #666; color: white; font-size: 0.8rem; margin-top: 20px; }
+        #admin-controls { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="admin-card">
+    <h1><i class="fa-solid fa-lock"></i> 관리자 패널</h1>
+
+    <div id="login-section">
+        <p>관리자 구글 계정으로 로그인하세요.</p>
+        <button class="btn-google" id="btn-login"><i class="fa-brands fa-google"></i> Google로 로그인</button>
+    </div>
+
+    <div id="admin-controls">
+        <div class="info-group">
+            <p>현재 접속: <b id="user-email">사용자</b></p>
+            <p>현재 DB 상금: <b id="current-prize-display">--</b>개</p>
+            <p>현재 마감일: <b id="current-expiry-display">--</b></p>
+        </div>
+
+        <label>상금 수정 (숫자만)</label>
+        <input type="number" id="prize-input" placeholder="예: 200">
+        <button class="btn-update" id="btn-update-prize">상금 수정하기 (+100)</button>
+        
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+        
+        <p style="font-size: 0.8rem; color: #ff4757;">* 아래 버튼 클릭 시 타이머가 7일 뒤로 리셋됩니다.</p>
+        <button class="btn-reset" id="btn-reset-timer"><i class="fa-solid fa-rotate"></i> 기록 경신 (7일 리셋)</button>
+
+        <button class="btn-logout" id="btn-logout">로그아웃</button>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+    import { getFirestore, doc, onSnapshot, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyApnxX1RXQLG8kiX0mYSVroSp3eATF7Njk",
+        authDomain: "streamer-challenge-rwo.firebaseapp.com",
+        projectId: "streamer-challenge-rwo",
+        storageBucket: "streamer-challenge-rwo.firebasestorage.app",
+        messagingSenderId: "935818900229",
+        appId: "1:935818900229:web:7c8a0f57244eb712d9fd6c",
+        measurementId: "G-BMMMRWSDD2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    const challengeDocRef = doc(db, "challenges", "current_challenge");
+
+    // UI 요소
+    const loginSection = document.getElementById('login-section');
+    const adminControls = document.getElementById('admin-controls');
+    const userEmailText = document.getElementById('user-email');
+
+    // 1. 인증 상태 감시
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // 본인 이메일 주소를 여기에 넣으세요 (보안용)
+            // if (user.email !== "본인이메일@gmail.com") { alert("권한이 없습니다."); signOut(auth); return; }
+            loginSection.style.display = 'none';
+            adminControls.style.display = 'block';
+            userEmailText.innerText = user.email;
+        } else {
+            loginSection.style.display = 'block';
+            adminControls.style.display = 'none';
+        }
+    });
+
+    // 2. 로그인/로그아웃
+    document.getElementById('btn-login').onclick = () => signInWithPopup(auth, provider);
+    document.getElementById('btn-logout').onclick = () => signOut(auth);
+
+    // 3. 실시간 데이터 표시
+    onSnapshot(challengeDocRef, (docSnap) => {
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            document.getElementById('current-prize-display').innerText = data.prize;
+            document.getElementById('current-expiry-display').innerText = data.expiryDate.toDate().toLocaleString();
+            document.getElementById('prize-input').value = data.prize;
+        }
+    });
+
+    // 4. 상금 수정
+    document.getElementById('btn-update-prize').onclick = async () => {
+        const newPrize = parseInt(document.getElementById('prize-input').value);
+        await updateDoc(challengeDocRef, { prize: newPrize });
+        alert("상금이 수정되었습니다.");
+    };
+
+    // 5. 기록 경신 (7일 리셋 + 상금 100개 추가)
+    document.getElementById('btn-reset-timer').onclick = async () => {
+        if(!confirm("새로운 기록자가 승인되었습니까? 상금이 100개 추가되고 시간이 7일로 리셋됩니다.")) return;
+        
+        const prizeInput = document.getElementById('prize-input');
+        const currentPrize = parseInt(prizeInput.value);
+        const nextPrize = currentPrize >= 1000 ? 1000 : currentPrize + 100;
+
+        const newExpiry = new Date();
+        newExpiry.setDate(newExpiry.getDate() + 7); // 7일 뒤
+
+        await updateDoc(challengeDocRef, {
+            prize: nextPrize,
+            expiryDate: Timestamp.fromDate(newExpiry)
+        });
+        alert("리셋 완료! 상금이 " + nextPrize + "개로 업데이트 되었습니다.");
+    };
+</script>
+
+</body>
+</html>
