@@ -65,6 +65,13 @@
     </div>
 </div>
 
+    <div class="admin-section" style="margin-top: 40px;">
+    <h2><i class="fa-solid fa-rectangle-ad"></i> 배너 광고 신청 검수</h2>
+    <div id="ad-app-container" class="list-container">
+        <p style="color:#999;">광고 신청 내역을 불러오는 중...</p>
+    </div>
+</div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
     import { getDatabase, ref, onValue, update, remove, get, set } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
@@ -98,6 +105,7 @@
             appSection.style.display = 'block';
             document.getElementById('user-email').innerText = user.email;
             loadApplications();
+            loadAdApplications();
         } else if (user) {
             alert("권한이 없는 계정입니다.");
             signOut(auth);
@@ -241,6 +249,65 @@ window.approveApp = async (key, nickname, game, link) => {
             await remove(ref(db, `applications/${key}`));
         }
     };
+
+    // 1. 광고 신청 목록 실시간 로드
+function loadAdApplications() {
+    const adAppsRef = ref(db, 'ad_applications');
+    onValue(adAppsRef, (snapshot) => {
+        const container = document.getElementById('ad-app-container');
+        container.innerHTML = "";
+        const data = snapshot.val();
+
+        if (!data) {
+            container.innerHTML = "<p style='color:#999;'>현재 접수된 광고 신청이 없습니다.</p>";
+            return;
+        }
+
+        Object.keys(data).forEach(key => {
+            const ad = data[key];
+            const item = document.createElement('div');
+            item.className = 'app-item'; // 기존 스타일 재활용
+            item.style = "background:#fff; border:1px solid #ddd; padding:15px; border-radius:10px; margin-bottom:15px; box-shadow:0 2px 5px rgba(0,0,0,0.05);";
+            
+            item.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div>
+                        <p><b>신청자:</b> ${ad.nickname} (@${ad.soopid})</p>
+                        <p><b>신청기간:</b> ${ad.days}일 (💎 ${ad.totalPrice.toLocaleString()}개)</p>
+                        <p><b>이미지:</b> <a href="${ad.imgLink}" target="_blank" style="color:#0046ff; text-decoration:underline;">[배너 이미지 보기]</a></p>
+                        <p style="font-size:0.8rem; color:#888;">신청일시: ${new Date(ad.timestamp).toLocaleString()}</p>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:5px;">
+                        <button onclick="approveAd('${key}')" style="background:#2ed573; color:white; border:none; padding:8px 12px; border-radius:5px; cursor:pointer;">승인</button>
+                        <button onclick="deleteAd('${key}')" style="background:#ff4757; color:white; border:none; padding:8px 12px; border-radius:5px; cursor:pointer;">삭제</button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(item);
+        });
+    });
+}
+
+// 2. 광고 승인 로직 (승인 시 실제 배너 데이터로 이동시키거나 상태 변경)
+window.approveAd = async (key) => {
+    if(confirm("이 광고를 승인하시겠습니까? 별풍선 입금이 확인된 경우에만 진행하세요.")) {
+        try {
+            // 실제 광고를 노출시키는 노드(active_ads)로 데이터를 복사하거나 상태를 바꿀 수 있습니다.
+            // 여기서는 일단 신청 목록에서 지우고 알림을 띄우는 것으로 구성했습니다.
+            alert("광고 승인 처리가 완료되었습니다. (추후 실제 배너 노출 로직과 연동 가능)");
+            await remove(ref(db, `ad_applications/${key}`));
+        } catch (error) {
+            alert("승인 처리 중 오류 발생");
+        }
+    }
+};
+
+// 3. 광고 신청 삭제
+window.deleteAd = async (key) => {
+    if(confirm("이 신청 내역을 삭제하시겠습니까?")) {
+        await remove(ref(db, `ad_applications/${key}`));
+    }
+};
 
 </script>
 
