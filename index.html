@@ -31,23 +31,30 @@
             border-bottom: 5px solid var(--primary-color);
         }
 
-        header h1 {
-            margin: 0;
-            font-size: 2.5rem;
-            letter-spacing: -1px;
-        }
-
-        header p {
-            opacity: 0.8;
-            font-weight: 300;
-            margin-top: 10px;
-        }
+        header h1 { margin: 0; font-size: 2.2rem; letter-spacing: -1px; }
+        header p { opacity: 0.8; font-weight: 300; margin-top: 10px; font-size: 0.9rem; }
 
         .container {
             max-width: 900px;
             margin: -30px auto 50px;
             padding: 0 20px;
         }
+
+        /* 인트로 섹션 추가 */
+        .intro-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        .intro-section h2 { font-size: 1.4rem; margin-bottom: 15px; }
+        .step-container { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 25px; }
+        .step-item { flex: 1; text-align: left; }
+        .step-num { font-size: 0.8rem; color: #999; display: block; }
+        .step-title { font-weight: bold; font-size: 1rem; display: block; margin: 2px 0; }
+        .step-desc { font-size: 0.85rem; color: #666; line-height: 1.3; }
+        .step-arrow { color: #ddd; font-size: 1.2rem; }
 
         .prize-card {
             background: var(--card-bg);
@@ -59,18 +66,8 @@
             border: 2px solid var(--primary-color);
         }
 
-        .prize-amount {
-            font-size: 3.5rem;
-            font-weight: 800;
-            color: var(--primary-color);
-            margin: 10px 0;
-        }
-
-        .prize-amount span {
-            font-size: 1.5rem;
-            color: #666;
-            margin-left: 5px;
-        }
+        .prize-amount { font-size: 3.5rem; font-weight: 800; color: var(--primary-color); margin: 10px 0; }
+        .prize-amount span { font-size: 1.5rem; color: #666; margin-left: 5px; }
 
         .timer-badge {
             display: inline-block;
@@ -81,7 +78,6 @@
             font-weight: bold;
             font-size: 1.1rem;
             margin-bottom: 15px;
-            transition: background 0.3s;
         }
 
         .rule-section {
@@ -89,101 +85,47 @@
             border-radius: 20px;
             padding: 40px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
         }
 
-        .rule-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            margin-top: 30px;
-        }
+        .rule-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 30px; }
+        .rule-item { padding: 20px; border-radius: 15px; background: #f9f9f9; border-left: 5px solid var(--primary-color); }
+        .rule-item h3 { margin-top: 0; color: var(--primary-color); display: flex; align-items: center; gap: 10px; font-size: 1rem; }
+        .rule-item p { margin: 0; font-size: 0.9rem; color: #555; }
 
-        @media (max-width: 768px) {
-            .rule-grid { grid-template-columns: 1fr; }
-        }
-
-        .rule-item {
-            padding: 20px;
-            border-radius: 15px;
-            background: #f9f9f9;
-            border-left: 5px solid var(--primary-color);
-        }
-
-        .rule-item h3 {
-            margin-top: 0;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        /* 게임 예시 섹션 추가 */
+        .example-section { margin-top: 40px; }
+        .example-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .example-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .example-card { background: white; padding: 15px; border-radius: 12px; border: 1px solid #eee; }
+        .ex-tag { font-size: 0.7rem; font-weight: bold; color: #999; text-transform: uppercase; }
+        .ex-game { font-weight: bold; font-size: 1rem; display: block; margin: 4px 0; }
+        .ex-goal { font-size: 0.9rem; color: var(--primary-color); font-weight: bold; }
+        .ex-sub { font-size: 0.8rem; color: #999; margin-top: 5px; }
 
         .btn-apply {
-            display: block;
-            width: 100%;
-            max-width: 300px;
-            margin: 40px auto 0;
-            background: var(--primary-color);
-            color: white;
-            text-decoration: none;
-            padding: 15px 30px;
-            border-radius: 12px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            text-align: center;
-            transition: transform 0.2s, background 0.2s;
-            cursor: pointer;
-            border: none;
+            display: block; width: 100%; max-width: 300px; margin: 40px auto 0;
+            background: var(--primary-color); color: white; text-decoration: none;
+            padding: 15px 30px; border-radius: 12px; font-size: 1.2rem; font-weight: bold;
+            text-align: center; transition: all 0.2s; cursor: pointer; border: none;
         }
+        .btn-apply:hover { transform: translateY(-3px); background: #0036cc; box-shadow: 0 5px 15px rgba(0,70,255,0.3); }
 
-        .btn-apply:hover {
-            transform: translateY(-3px);
-            background: #0036cc;
-        }
+        footer { text-align: center; padding: 40px; color: #888; font-size: 0.8rem; border-top: 1px solid #eee; background: white; }
 
-        footer {
-            text-align: center;
-            padding: 40px;
-            color: #888;
-            font-size: 0.9rem;
-        }
-
-        .highlight {
-            color: #e67e22;
-            font-weight: bold;
-        }
-
-        /* 모달 스타일 */
+        /* 모달 스타일 유지 */
         #applyModal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;
         }
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 400px;
-            position: relative;
-        }
-        .modal-content input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box;
-        }
-        .modal-content label {
-            display: block;
-            margin-top: 15px;
-            font-weight: bold;
-            font-size: 0.9rem;
+        .modal-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; }
+        .modal-content input { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .modal-content label { display: block; margin-top: 15px; font-weight: bold; font-size: 0.9rem; }
+
+        @media (max-width: 768px) {
+            .step-container { flex-direction: column; align-items: flex-start; }
+            .step-arrow { display: none; }
+            .rule-grid, .example-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -195,36 +137,89 @@
 </header>
 
 <div class="container">
+    <div class="intro-section">
+        <h2>"누구도 깨지 못한 7일, 그 상금의 주인공이 되세요"</h2>
+        <p style="color:#666; font-size: 0.95rem;">리셋 위크는 스트리머들이 기록에 도전하는 무한 경쟁 챌린지입니다.</p>
+        
+        <div class="step-container">
+            <div class="step-item">
+                <span class="step-num">1</span>
+                <span class="step-title">기록 경신</span>
+                <span class="step-desc">기존 기록을 깨고<br>증빙 링크를 제출하세요</span>
+            </div>
+            <div class="step-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+            <div class="step-item">
+                <span class="step-num">2</span>
+                <span class="step-title">타이머 리셋</span>
+                <span class="step-desc">승인 즉시 상금 추가!<br>시간은 다시 7일로 리셋</span>
+            </div>
+            <div class="step-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+            <div class="step-item">
+                <span class="step-num">3</span>
+                <span class="step-title">상금 획득</span>
+                <span class="step-desc">7일간 기록이 깨지지 않으면<br>누적 상금은 당신의 것!</span>
+            </div>
+        </div>
+    </div>
+
     <div class="prize-card">
-        <div class="timer-badge"><i class="fa-solid fa-stopwatch"></i> 연결 중...</div>
-        <p>현재 누적 상금</p>
-        <div class="prize-amount">💎 --<span>개</span></div>
-        <p style="color: #666;">갱신될 때마다 <span class="highlight">+100개</span> (최대 1,000개)</p>
+        <div class="timer-badge" id="timer-display"><i class="fa-solid fa-stopwatch"></i> 연결 중...</div>
+        <p style="margin: 0; font-size: 0.9rem; color: #888;">현재 누적 상금</p>
+        <div class="prize-amount" id="prize-display">💎 --<span>개</span></div>
+        <p style="color: #666; font-size: 0.85rem;">갱신될 때마다 <span style="color:#e67e22; font-weight:bold;">+100개</span> (최대 1,000개)</p>
     </div>
 
     <div class="rule-section">
-        <h2 style="text-align: center; margin-bottom: 40px;">Challenge Rules</h2>
+        <h2 style="text-align: center; margin-bottom: 30px; font-weight: 800;">Challenge Rules</h2>
         
         <div class="rule-grid">
             <div class="rule-item">
                 <h3><i class="fa-solid fa-check-to-slot"></i> 참여 조건</h3>
-                <p>SOOP 통합 검색에서 확인 가능하며, 과거에 해당 종목으로 <b>방송했던 스트리머</b>가 존재하는 종목이어야 합니다.</p>
+                <p>SOOP 통합 검색에서 확인 가능하며, 해당 종목 방송 이력이 있는 스트리머라면 누구나 가능합니다.</p>
             </div>
-
             <div class="rule-item">
                 <h3><i class="fa-solid fa-video"></i> 기록 증빙</h3>
-                <p>본인의 도전 기록이 담긴 <b>SOOP 다시보기 혹은 클립 링크</b>를 필수로 제출해야 관리자 승인이 가능합니다.</p>
+                <p>도전 기록이 담긴 SOOP 다시보기 혹은 클립 링크를 필수로 제출해야 승인이 가능합니다.</p>
             </div>
-
             <div class="rule-item">
                 <h3><i class="fa-solid fa-rotate"></i> 리셋 위크</h3>
-                <p>새로운 도전자가 기록을 경신하고 관리자가 승인하는 즉시, 상금 획득까지 남은 시간은 <b>다시 7일로 초기화</b>됩니다.</p>
+                <p>기록 경신 및 승인 즉시, 상금 획득까지 남은 시간은 7일(168시간)로 다시 초기화됩니다.</p>
             </div>
-
             <div class="rule-item">
                 <h3><i class="fa-solid fa-trophy"></i> 최종 승리</h3>
-                <p>마지막 기록 경신 이후 <b>일주일(168시간)</b> 동안 아무도 기록을 깨지 못하면 최종 승자가 되어 상금을 획득합니다.</p>
+                <p>마지막 기록 경신 이후 일주일 동안 기록이 깨지지 않으면 최종 상금을 획득합니다.</p>
             </div>
+        </div>
+
+        <div class="example-section">
+            <div class="example-title"><i class="fa-solid fa-gamepad"></i> 도전 가능한 게임 예시</div>
+            <div class="example-grid">
+                <div class="example-card">
+                    <span class="ex-tag">FPS</span>
+                    <span class="ex-game">배틀그라운드</span>
+                    <div class="ex-goal">솔로 모드 5킬 이상 달성</div>
+                    <div class="ex-sub">가장 최근 기록을 경신해 보세요!</div>
+                </div>
+                <div class="example-card">
+                    <span class="ex-tag">MOBA</span>
+                    <span class="ex-game">리그 오브 레전드</span>
+                    <div class="ex-goal">일반/랭크 5킬 이상 달성</div>
+                    <div class="ex-sub">0데스로 킬 기록 갱신하기!</div>
+                </div>
+                <div class="example-card">
+                    <span class="ex-tag">Casual</span>
+                    <span class="ex-game">수박 게임</span>
+                    <div class="ex-goal">최종 점수 1,000점 돌파</div>
+                    <div class="ex-sub">누구나 한 번쯤 찍어본 그 점수!</div>
+                </div>
+                <div class="example-card">
+                    <span class="ex-tag">ETC</span>
+                    <span class="ex-game">구글 공룡 게임</span>
+                    <div class="ex-goal">최고 점수 500점 돌파</div>
+                    <div class="ex-sub">인터넷 끊겼을 때 하던 실력 그대로!</div>
+                </div>
+            </div>
+            <p style="font-size: 0.75rem; color: #bbb; margin-top: 15px;">* 현재 등록된 기록보다 1점/1킬이라도 높으면 즉시 승인됩니다.</p>
         </div>
 
         <button class="btn-apply">챌린지 도전 신청하기</button>
@@ -233,8 +228,8 @@
 
 <div id="applyModal">
     <div class="modal-content">
-        <h2 style="margin-top:0; color:#0046ff;">챌린지 도전 신청</h2>
-        <p style="font-size:0.8rem; color:#666;">기록 확인 후 관리자가 승인하면 상금이 갱신됩니다.</p>
+        <h2 style="margin-top:0; color:#0046ff; font-size: 1.5rem;">챌린지 도전 신청</h2>
+        <p style="font-size:0.8rem; color:#666; margin-bottom: 20px;">기록 확인 후 관리자가 승인하면 상금이 갱신됩니다.</p>
         
         <label>스트리머 닉네임</label>
         <input type="text" id="app-nickname" placeholder="SOOP 닉네임 입력">
@@ -246,7 +241,7 @@
         <input type="url" id="app-link" placeholder="https://ch.sooplive.co.kr/...">
 
         <div style="margin-top:25px; display:flex; gap:10px;">
-            <button id="btn-close-modal" style="flex:1; padding:12px; border:none; border-radius:8px; background:#eee; cursor:pointer;">취소</button>
+            <button id="btn-close-modal" style="flex:1; padding:12px; border:none; border-radius:8px; background:#eee; cursor:pointer; font-weight:bold;">취소</button>
             <button id="btn-submit-app" style="flex:2; padding:12px; border:none; border-radius:8px; background:#0046ff; color:white; font-weight:bold; cursor:pointer;">신청 완료</button>
         </div>
     </div>
@@ -274,23 +269,21 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    const prizeAmountEl = document.querySelector('.prize-amount');
-    const timerBadgeEl = document.querySelector('.timer-badge');
+    const prizeAmountEl = document.getElementById('prize-display');
+    const timerBadgeEl = document.getElementById('timer-display');
     const modal = document.getElementById('applyModal');
     const applyBtn = document.querySelector('.btn-apply');
 
     let countdownInterval;
 
-    // 1. 실시간 데이터 감시 (DB 값이 바뀔 때만 한 번 실행됨)
+    // 1. 실시간 데이터 감시
     const challengeRef = ref(db, 'current_challenge');
     onValue(challengeRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
-            // 상금 텍스트 업데이트
             if (data.prize !== undefined) {
                 prizeAmountEl.innerHTML = `💎 ${data.prize.toLocaleString()}<span>개</span>`;
             }
-            // 종료 시간 업데이트 및 클라이언트 사이드 카운트다운 시작
             if (data.expiryDate) {
                 if (countdownInterval) clearInterval(countdownInterval);
                 startClientCountdown(data.expiryDate);
@@ -300,10 +293,9 @@
         }
     });
 
-    // 2. 클라이언트 사이드 카운트다운 (한 번 받은 데이터로 로컬에서 계산)
+    // 2. 카운트다운 로직
     function startClientCountdown(expiryTimestamp) {
         const targetDate = new Date(expiryTimestamp).getTime();
-
         const updateTimer = () => {
             const now = new Date().getTime();
             const diff = targetDate - now;
@@ -322,8 +314,6 @@
             timerBadgeEl.style.background = "#ff4757";
             timerBadgeEl.innerHTML = `<i class="fa-solid fa-stopwatch"></i> 남은 시간: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         };
-
-        // 1초마다 로컬 메모리에서 계산
         countdownInterval = setInterval(updateTimer, 1000);
         updateTimer();
     }
@@ -332,7 +322,7 @@
     applyBtn.onclick = () => modal.style.display = 'flex';
     document.getElementById('btn-close-modal').onclick = () => modal.style.display = 'none';
 
-    // 4. 도전 신청 (누구나 가능)
+    // 4. 도전 신청
     document.getElementById('btn-submit-app').onclick = async () => {
         const nickname = document.getElementById('app-nickname').value;
         const game = document.getElementById('app-game').value;
@@ -347,18 +337,13 @@
             const appRef = ref(db, 'applications');
             const newAppRef = push(appRef);
             await set(newAppRef, {
-                nickname,
-                game,
-                link,
+                nickname, game, link,
                 timestamp: Date.now(),
                 status: 'pending'
             });
-
             alert("신청되었습니다! 관리자 승인 후 반영됩니다.");
             modal.style.display = 'none';
-            document.getElementById('app-nickname').value = "";
-            document.getElementById('app-game').value = "";
-            document.getElementById('app-link').value = "";
+            document.querySelectorAll('#applyModal input').forEach(i => i.value = "");
         } catch (error) {
             console.error(error);
             alert("오류가 발생했습니다.");
