@@ -130,17 +130,33 @@
     };
 
     // 4. 수동 리셋 함수
-    async function resetChallenge() {
-        const snap = await new Promise(resolve => onValue(challengeRef, s => resolve(s), {onlyOnce: true}));
-        const currentPrize = snap.val().prize || 0;
-        const nextPrize = currentPrize >= 1000 ? 1000 : currentPrize + 100;
-        const newExpiry = Date.now() + (7 * 24 * 60 * 60 * 1000); // 현재 + 7일
+async function resetChallenge() {
+    const challengeRef = ref(db, 'current_challenge');
+    try {
+        const snapshot = await get(challengeRef);
+        const currentData = snapshot.val();
 
-        await update(challengeRef, {
-            prize: nextPrize,
-            expiryDate: newExpiry
+        // 데이터가 없는 경우(null)를 대비해 기본값 설정
+        const currentPrize = (currentData && currentData.prize !== undefined) ? currentData.prize : 0;
+        
+        // 새로운 상금 계산 (기존 상금 + 100, 최대 1000)
+        const newPrize = Math.min(currentPrize + 100, 1000);
+        
+        // 새로운 만료 시간 설정 (현재 시간으로부터 7일 뒤)
+        const newExpiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
+
+        await set(challengeRef, {
+            prize: newPrize,
+            expiryDate: newExpiry,
+            lastUpdated: Date.now()
         });
+
+        console.log("챌린지 리셋 완료:", newPrize);
+    } catch (error) {
+        console.error("리셋 중 오류 발생:", error);
+        alert("데이터 업데이트에 실패했습니다.");
     }
+}
 
     document.getElementById('btn-reset-timer').onclick = async () => {
         if(confirm("타이머를 7일로 리셋하고 상금을 100개 추가하시겠습니까?")) {
