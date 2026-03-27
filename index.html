@@ -487,6 +487,33 @@
 
     let countdownInterval;
 
+    
+
+    // 2. 카운트다운 로직
+    function startClientCountdown(expiryTimestamp) {
+        const targetDate = new Date(expiryTimestamp).getTime();
+        const updateTimer = () => {
+            const now = new Date().getTime();
+            const diff = targetDate - now;
+
+            if (diff <= 0) {
+                clearInterval(countdownInterval);
+                timerBadgeEl.style.background = "#2ed573";
+                timerBadgeEl.innerHTML = `<i class="fa-solid fa-flag-checkered"></i> 챌린지 종료 (기록 검증 중)`;
+                return;
+            }
+
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            timerBadgeEl.style.background = "#ff4757";
+            timerBadgeEl.innerHTML = `<i class="fa-solid fa-stopwatch"></i> 남은 시간: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        };
+        countdownInterval = setInterval(updateTimer, 1000);
+        updateTimer();
+    }
+
     // 1. 실시간 데이터 감시
     const challengeRef = ref(db, 'current_challenge');
 
@@ -534,31 +561,6 @@ const challengeLinkEl = document.getElementById('challenge-link');
         if (challengeLinkEl) challengeLinkEl.style.display = "none";
         }
     });
-
-    // 2. 카운트다운 로직
-    function startClientCountdown(expiryTimestamp) {
-        const targetDate = new Date(expiryTimestamp).getTime();
-        const updateTimer = () => {
-            const now = new Date().getTime();
-            const diff = targetDate - now;
-
-            if (diff <= 0) {
-                clearInterval(countdownInterval);
-                timerBadgeEl.style.background = "#2ed573";
-                timerBadgeEl.innerHTML = `<i class="fa-solid fa-flag-checkered"></i> 챌린지 종료 (기록 검증 중)`;
-                return;
-            }
-
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-            timerBadgeEl.style.background = "#ff4757";
-            timerBadgeEl.innerHTML = `<i class="fa-solid fa-stopwatch"></i> 남은 시간: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        };
-        countdownInterval = setInterval(updateTimer, 1000);
-        updateTimer();
-    }
 
     // 3. 모달 제어
     applyBtn.onclick = () => modal.style.display = 'flex';
