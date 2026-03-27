@@ -681,6 +681,25 @@
 
     let countdownInterval;
 
+    // 스크립트 태그 최상단에 배치
+window.openAdModal = function(side) { 
+    const positionInput = document.getElementById('ad-position-value');
+    const modal = document.getElementById('adModal');
+    
+    if (positionInput && modal) {
+        positionInput.value = side; 
+        modal.style.display = 'block';
+        console.log("모달 열림:", side); // 테스트용 로그
+    } else {
+        console.error("ad-position-value 또는 adModal 요소를 찾을 수 없습니다.");
+    }
+};
+
+window.closeAdModal = function() {
+    const modal = document.getElementById('adModal');
+    if (modal) modal.style.display = 'none';
+};
+
     // 2. 카운트다운 로직
     function startClientCountdown(expiryTimestamp) {
         const targetDate = new Date(expiryTimestamp).getTime();
