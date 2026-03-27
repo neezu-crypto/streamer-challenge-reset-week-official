@@ -297,19 +297,23 @@ window.approveAd = async (key) => {
 
     if (!adData) return;
 
-    if(confirm(`${adData.nickname} 님의 광고를 승인하시겠습니까?\n승인 즉시 사용자 페이지 배너에 게시됩니다.`)) {
+    // 신청 데이터에서 위치(left 또는 right)를 가져옵니다. 
+    // 데이터가 없을 경우를 대비해 기본값 'left'를 설정합니다.
+    const targetPosition = adData.position || 'left';
+    const posKor = targetPosition === 'left' ? "좌측" : "우측";
+
+    if(confirm(`${adData.nickname} 님의 광고를 [${posKor}] 배너에 승인하시겠습니까?\n승인 즉시 사용자 페이지에 게시됩니다.`)) {
         try {
-            // 2. active_ads 노드에 데이터 복사 (좌/우 선택 로직은 일단 좌측 우선이나 랜덤 가능)
-            // 여기서는 간단하게 'current_banner'라는 고정 위치에 업데이트하겠습니다.
-            await set(ref(db, 'active_ads/left'), {
+            // 2. 신청자가 선택한 위치(active_ads/left 또는 active_ads/right)에 데이터 복사
+            await set(ref(db, `active_ads/${targetPosition}`), {
                 imgLink: adData.imgLink,
-                link: "#", // 클릭 시 이동할 링크 (필요시 추가 입력)
+                link: "#", // 클릭 시 이동할 링크
                 expiryTimestamp: Date.now() + (adData.days * 24 * 60 * 60 * 1000)
             });
 
             // 3. 신청 목록에서 삭제
             await remove(ref(db, `ad_applications/${key}`));
-            alert("광고가 성공적으로 게시되었습니다!");
+            alert(`${posKor} 광고가 성공적으로 게시되었습니다!`);
         } catch (error) {
             console.error(error);
             alert("승인 처리 중 오류가 발생했습니다.");
