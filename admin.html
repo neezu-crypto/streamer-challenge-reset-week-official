@@ -289,19 +289,33 @@ function loadAdApplications() {
 }
 
 // 2. 광고 승인 로직 (승인 시 실제 배너 데이터로 이동시키거나 상태 변경)
+// 관리자 광고 승인 로직 (실제 게시 포함)
 window.approveAd = async (key) => {
-    if(confirm("이 광고를 승인하시겠습니까? 별풍선 입금이 확인된 경우에만 진행하세요.")) {
+    // 1. 해당 신청 데이터 가져오기
+    const snapshot = await get(ref(db, `ad_applications/${key}`));
+    const adData = snapshot.val();
+
+    if (!adData) return;
+
+    if(confirm(`${adData.nickname} 님의 광고를 승인하시겠습니까?\n승인 즉시 사용자 페이지 배너에 게시됩니다.`)) {
         try {
-            // 실제 광고를 노출시키는 노드(active_ads)로 데이터를 복사하거나 상태를 바꿀 수 있습니다.
-            // 여기서는 일단 신청 목록에서 지우고 알림을 띄우는 것으로 구성했습니다.
-            alert("광고 승인 처리가 완료되었습니다. (추후 실제 배너 노출 로직과 연동 가능)");
+            // 2. active_ads 노드에 데이터 복사 (좌/우 선택 로직은 일단 좌측 우선이나 랜덤 가능)
+            // 여기서는 간단하게 'current_banner'라는 고정 위치에 업데이트하겠습니다.
+            await set(ref(db, 'active_ads/left'), {
+                imgLink: adData.imgLink,
+                link: "#", // 클릭 시 이동할 링크 (필요시 추가 입력)
+                expiryTimestamp: Date.now() + (adData.days * 24 * 60 * 60 * 1000)
+            });
+
+            // 3. 신청 목록에서 삭제
             await remove(ref(db, `ad_applications/${key}`));
+            alert("광고가 성공적으로 게시되었습니다!");
         } catch (error) {
-            alert("승인 처리 중 오류 발생");
+            console.error(error);
+            alert("승인 처리 중 오류가 발생했습니다.");
         }
     }
 };
-
 // 3. 광고 신청 삭제
 window.deleteAd = async (key) => {
     if(confirm("이 신청 내역을 삭제하시겠습니까?")) {
