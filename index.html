@@ -345,6 +345,30 @@
         padding: 6px 12px;
     }
 }
+
+        #mouse-cursor-tip {
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 8px 14px;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    z-index: 9999; /* 최상단 배치 */
+    pointer-events: none; /* 중요: 마우스 클릭을 방해하지 않음 */
+    transform: translate(15px, 15px); /* 마우스 커서에서 약간 오른쪽 아래로 배치 */
+    transition: transform 0.1s ease-out; /* 부드러운 따라오기 효과 */
+    display: none; /* 초기 상태는 숨김 (마우스 움직이면 나타남) */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* 모바일에서는 터치 환경이므로 가독성을 위해 숨기는 것이 좋습니다 */
+@media (max-width: 1024px) {
+    #mouse-cursor-tip { display: none !important; }
+}
     </style>
 </head>
 <body>
@@ -501,6 +525,8 @@
     &copy; 2026 스트리머의 도전: 리셋 위크 챌린지. All rights reserved.
 </footer>
 
+    <div id="mouse-cursor-tip">현재 준비중인 서비스입니다</div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
     import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
@@ -632,6 +658,25 @@ const challengeLinkEl = document.getElementById('challenge-link');
             alert("오류가 발생했습니다.");
         }
     };
+
+    const cursorTip = document.getElementById('mouse-cursor-tip');
+
+window.addEventListener('mousemove', (e) => {
+    // 첫 움직임에 말풍선 노출
+    if (cursorTip.style.display !== 'block') {
+        cursorTip.style.display = 'block';
+    }
+
+    // 마우스 좌표에 맞춰 이동 (X, Y 좌표 반영)
+    // 스타일의 transform: translate(15px, 15px)와 결합되어 커서를 가리지 않습니다.
+    cursorTip.style.left = e.clientX + 'px';
+    cursorTip.style.top = e.clientY + 'px';
+});
+
+// 마우스가 화면을 벗어나면 숨김 처리
+window.addEventListener('mouseout', () => {
+    cursorTip.style.display = 'none';
+});
 </script>
 
 </body>
