@@ -19,7 +19,8 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 0;
+            padding-left: 100px; /* 배너 폭(80px) + 여유공간(20px) */
+            padding-right: 100px;
             line-height: 1.6;
         }
 
@@ -374,6 +375,78 @@
 @media (max-width: 1024px) {
     #mouse-cursor-tip { display: none !important; }
 }
+
+        /* 2. 배너 공통 스타일 */
+.side-banner {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%); /* 화면 세로 중앙 정렬 */
+    width: 80px;
+    height: 209px;
+    z-index: 1000;
+    background: #eee; /* 이미지 없을 때 대비용 */
+    overflow: hidden;
+}
+
+.side-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.banner-left { left: 10px; }
+.banner-right { right: 10px; }
+
+/* 3. 모바일 대응 (반으로 줄이기) */
+@media (max-width: 1024px) {
+    /* 본문 여백도 함께 줄여줍니다 */
+    body {
+        padding-left: 50px;
+        padding-right: 50px;
+    }
+
+    .side-banner {
+        width: 40px;   /* 80의 절반 */
+        height: 104px; /* 209의 절반(소수점 반올림) */
+    }
+    
+    .banner-left { left: 5px; }
+    .banner-right { right: 5px; }
+}
+
+/* 화면이 너무 작아 배너가 본문을 가릴 정도면 숨기기 (선택 사항) */
+@media (max-width: 480px) {
+    .side-banner { display: none; }
+    body { padding: 0; }
+}
+
+        /* 광고 없는 배너 상태 */
+.ad-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #f1f1f1;
+    color: #999;
+    cursor: pointer;
+    font-size: 0.75rem;
+    text-align: center;
+    border: 1px dashed #ccc;
+    transition: all 0.3s;
+}
+
+.ad-placeholder:hover {
+    background: #e8edff;
+    color: #0046ff;
+    border-color: #0046ff;
+}
+
+/* 모달 내 입력창 공통 스타일 (기본 스타일이 있다면 생략 가능) */
+.input-group { margin-bottom: 15px; text-align: left; }
+.input-group label { display: block; font-size: 0.85rem; margin-bottom: 5px; font-weight: bold; }
+.input-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -532,6 +605,54 @@
 
     <div id="mouse-cursor-tip">현재 준비중인 서비스입니다</div>
 
+    <div class="side-banner banner-left" onclick="openAdModal()">
+    <div class="ad-placeholder">
+        <i class="fa-solid fa-plus"></i><br>광고 문의
+    </div>
+</div>
+
+    <div id="adModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeAdModal()">&times;</span>
+        <h2>📢 사이드 배너 광고 신청</h2>
+        <p style="font-size: 0.85rem; color: #666; margin-bottom: 20px;">1일 단가: 💎 별풍선 50개 (최대 30일)</p>
+        
+        <div class="input-group">
+            <label>신청자 닉네임</label>
+            <input type="text" id="ad-nickname" placeholder="닉네임을 입력하세요">
+        </div>
+        <div class="input-group">
+            <label>SOOP ID</label>
+            <input type="text" id="ad-soopid" placeholder="아이디를 입력하세요">
+        </div>
+        <div class="input-group">
+            <label>배너 이미지 링크 (80x209)</label>
+            <input type="text" id="ad-img-link" placeholder="https://...">
+        </div>
+        <div class="input-group">
+            <label>신청 기간 (일 단위)</label>
+            <input type="number" id="ad-days" min="1" max="30" placeholder="예: 7" oninput="calculateAdPrice()">
+        </div>
+
+        <div id="ad-price-display" style="margin: 15px 0; padding: 10px; background: #f8f9ff; border-radius: 8px; color: #0046ff; font-weight: bold; text-align: center;">
+            총 결제 예정 금액: 💎 0개
+        </div>
+
+        <div style="margin: 15px 0; font-size: 0.8rem; color: #555;">
+            <input type="checkbox" id="ad-agree"> 
+            <label for="ad-agree">(필수) 관리자가 닉네임 및 아이디를 수집하는 것에 동의합니다.</label>
+        </div>
+
+        <button class="btn-submit" id="btn-submit-ad" onclick="submitAdApplication()">신청하기</button>
+    </div>
+</div>
+
+<div class="side-banner banner-right" onclick="openAdModal()">
+    <div class="ad-placeholder">
+        <i class="fa-solid fa-plus"></i><br>광고 문의
+    </div>
+    </div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
     import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
@@ -688,6 +809,60 @@ window.addEventListener('mouseout', (e) => {
         cursorTip.style.display = 'none';
     }
 });
+
+    // 모달 열기/닫기
+function openAdModal() { document.getElementById('adModal').style.display = 'block'; }
+function closeAdModal() { document.getElementById('adModal').style.display = 'none'; }
+
+// 실시간 단가 계산 (1일당 50개)
+function calculateAdPrice() {
+    const days = document.getElementById('ad-days').value;
+    const priceDisplay = document.getElementById('ad-price-display');
+    const totalPrice = (days > 0) ? days * 50 : 0;
+    priceDisplay.innerText = `총 결제 예정 금액: 💎 ${totalPrice.toLocaleString()}개`;
+}
+
+// 광고 신청 제출
+async function submitAdApplication() {
+    const nickname = document.getElementById('ad-nickname').value;
+    const soopid = document.getElementById('ad-soopid').value;
+    const imgLink = document.getElementById('ad-img-link').value;
+    const days = document.getElementById('ad-days').value;
+    const agree = document.getElementById('ad-agree').checked;
+
+    if (!nickname || !soopid || !imgLink || !days) {
+        alert("모든 항목을 입력해주세요.");
+        return;
+    }
+    if (!agree) {
+        alert("개인정보 수집에 동의해야 신청이 가능합니다.");
+        return;
+    }
+
+    try {
+        const adRef = ref(db, 'ad_applications');
+        const newAdRef = push(adRef);
+        await set(newAdRef, {
+            nickname,
+            soopid,
+            imgLink,
+            days: parseInt(days),
+            totalPrice: days * 50,
+            timestamp: Date.now(),
+            status: 'pending'
+        });
+
+        alert("광고 신청이 완료되었습니다! 관리자 확인 후 연락드립니다.");
+        closeAdModal();
+        // 입력값 초기화
+        document.querySelectorAll('#adModal input').forEach(i => i.value = "");
+        document.getElementById('ad-agree').checked = false;
+        calculateAdPrice();
+    } catch (error) {
+        console.error(error);
+        alert("신청 중 오류가 발생했습니다.");
+    }
+}
 </script>
 
 </body>
