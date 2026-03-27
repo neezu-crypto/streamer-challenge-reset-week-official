@@ -615,6 +615,9 @@
     <div class="modal-content">
         <span class="close" onclick="closeAdModal()">&times;</span>
         <h2>📢 사이드 배너 광고 신청</h2>
+
+        <input type="hidden" id="ad-position-value">
+        
         <p style="font-size: 0.85rem; color: #666; margin-bottom: 20px;">1일 단가: 💎 별풍선 50개 (최대 30일)</p>
         
         <div class="input-group">
@@ -822,6 +825,9 @@ function calculateAdPrice() {
 
 // 광고 신청 제출
 async function submitAdApplication() {
+    // 추가된 부분: 숨겨진 필드에서 좌측/우측 위치 정보를 가져옵니다.
+    const position = document.getElementById('ad-position-value').value;
+    
     const nickname = document.getElementById('ad-nickname').value;
     const soopid = document.getElementById('ad-soopid').value;
     const imgLink = document.getElementById('ad-img-link').value;
@@ -841,17 +847,22 @@ async function submitAdApplication() {
         const adRef = ref(db, 'ad_applications');
         const newAdRef = push(adRef);
         await set(newAdRef, {
+            position, // 'left' 또는 'right' 정보가 함께 저장됩니다.
             nickname,
             soopid,
             imgLink,
             days: parseInt(days),
-            totalPrice: days * 50,
+            totalPrice: parseInt(days) * 50,
             timestamp: Date.now(),
             status: 'pending'
         });
 
-        alert("광고 신청이 완료되었습니다! 관리자 확인 후 연락드립니다.");
+        // 알림 메시지에 위치 정보를 포함하면 더 친절합니다.
+        const posText = position === 'left' ? "좌측" : "우측";
+        alert(`${posText} 배너 광고 신청이 완료되었습니다! 관리자 확인 후 연락드립니다.`);
+        
         closeAdModal();
+        
         // 입력값 초기화
         document.querySelectorAll('#adModal input').forEach(i => i.value = "");
         document.getElementById('ad-agree').checked = false;
@@ -865,63 +876,63 @@ async function submitAdApplication() {
     // 실시간 광고 배너 업데이트 로직
 const leftBannerBox = document.querySelector('.banner-left');
 
-// 좌측 배너 실시간 업데이트 (데이터 유지, 조건부 숨김)
+// 좌측 배너 실시간 업데이트
 onValue(ref(db, 'active_ads/left'), (snapshot) => {
     const ad = snapshot.val();
     const now = Date.now();
     const leftBannerBox = document.querySelector('.banner-left');
     
-    if (!leftBannerBox) return; // 요소가 없으면 중단
+    if (!leftBannerBox) return;
 
-    // 광고 데이터가 존재하고, 만료 시간이 아직 지나지 않은 경우에만 노출
     if (ad && ad.expiryTimestamp && ad.expiryTimestamp > now) {
         leftBannerBox.innerHTML = `
             <a href="${ad.link || '#'}" target="_blank" style="display:block; width:100%; height:100%;">
                 <img src="${ad.imgLink}" alt="광고" style="width:100%; height:100%; object-fit:cover;">
             </a>
         `;
-        // 광고 중일 때는 신청 모달이 뜨지 않도록 클릭 이벤트 제거
         leftBannerBox.onclick = null; 
     } else {
-        // 데이터가 없거나 기간이 만료된 경우 (DB 삭제 없이 화면만 교체)
         leftBannerBox.innerHTML = `
             <div class="ad-placeholder" style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#f1f1f1; color:#999; cursor:pointer; font-size:0.75rem; border:1px dashed #ccc;">
                 <i class="fa-solid fa-plus"></i><br>광고 문의
             </div>
         `;
-        // 다시 클릭 시 신청 모달이 뜨도록 설정
-        leftBannerBox.onclick = openAdModal;
+        // ★ 수정된 부분: 'left'를 인자로 전달합니다.
+        leftBannerBox.onclick = () => openAdModal('left');
     }
 });
 
-    // 우측 배너 실시간 업데이트 (데이터 유지, 조건부 숨김)
+// 우측 배너 실시간 업데이트
 onValue(ref(db, 'active_ads/right'), (snapshot) => {
     const ad = snapshot.val();
     const now = Date.now();
     const rightBannerBox = document.querySelector('.banner-right');
     
-    if (!rightBannerBox) return; // 요소가 없으면 중단
+    if (!rightBannerBox) return;
 
-    // 광고 데이터가 존재하고, 만료 시간이 아직 지나지 않은 경우에만 노출
     if (ad && ad.expiryTimestamp && ad.expiryTimestamp > now) {
         rightBannerBox.innerHTML = `
             <a href="${ad.link || '#'}" target="_blank" style="display:block; width:100%; height:100%;">
                 <img src="${ad.imgLink}" alt="광고" style="width:100%; height:100%; object-fit:cover;">
             </a>
         `;
-        // 광고 중일 때는 신청 모달이 뜨지 않도록 클릭 이벤트 제거
         rightBannerBox.onclick = null; 
     } else {
-        // 데이터가 없거나 기간이 만료된 경우 (DB 삭제 없이 화면만 교체)
         rightBannerBox.innerHTML = `
             <div class="ad-placeholder" style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#f1f1f1; color:#999; cursor:pointer; font-size:0.75rem; border:1px dashed #ccc;">
                 <i class="fa-solid fa-plus"></i><br>광고 문의
             </div>
         `;
-        // 다시 클릭 시 신청 모달이 뜨도록 설정
-        rightBannerBox.onclick = openAdModal;
+        // ★ 수정된 부분: 'right'를 인자로 전달합니다.
+        rightBannerBox.onclick = () => openAdModal('right');
     }
 });
+
+    // 1. 모달 열 때 위치 정보를 저장함
+function openAdModal(side) { 
+    document.getElementById('ad-position-value').value = side; // 'left' 또는 'right' 저장
+    document.getElementById('adModal').style.display = 'block'; 
+}
 </script>
 
 </body>
