@@ -247,6 +247,70 @@
             text-align: center;
         }
     }
+
+        /* 버튼 그룹 레이아웃 */
+    .btn-group {
+        display: flex;
+        flex-direction: row; /* PC에서는 가로 정렬 */
+        justify-content: center;
+        gap: 15px;
+        margin-top: 40px;
+        width: 100%;
+    }
+
+    .btn-apply, .btn-developer {
+        flex: 1;
+        max-width: 250px;
+        padding: 15px 20px;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        text-align: center;
+        text-decoration: none;
+        transition: all 0.2s;
+        cursor: pointer;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    /* 도전 신청 버튼 스타일 */
+    .btn-apply {
+        background: var(--primary-color);
+        color: white;
+    }
+    .btn-apply:hover {
+        transform: translateY(-3px);
+        background: #0036cc;
+        box-shadow: 0 5px 15px rgba(0,70,255,0.3);
+    }
+
+    /* 개발자 페이지 버튼 스타일 (SOOP 브랜드 컬러 느낌) */
+    .btn-developer {
+        background: #ffffff;
+        color: #333;
+        border: 2px solid #eee;
+    }
+    .btn-developer:hover {
+        transform: translateY(-3px);
+        background: #f8f9fa;
+        border-color: #ddd;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+
+    /* 모바일 대응 */
+    @media (max-width: 600px) {
+        .btn-group {
+            flex-direction: column; /* 모바일은 세로 정렬 */
+            align-items: center;
+        }
+        .btn-apply, .btn-developer {
+            max-width: 100%;
+            width: 100%;
+        }
+    }
     </style>
 </head>
 <body>
@@ -352,8 +416,15 @@
             <p style="font-size: 0.75rem; color: #bbb; margin-top: 15px;">* 현재 등록된 기록보다 1점/1킬이라도 높으면 즉시 승인됩니다.</p>
         </div>
 
-        <button class="btn-apply">챌린지 도전 신청하기</button>
-    </div>
+        <div class="btn-group">
+    <button class="btn-apply">
+        <i class="fa-solid fa-paper-plane"></i> 챌린지 도전 신청하기
+    </button>
+    
+    <a href="https://www.sooplive.com/station/skftodwocks2" target="_blank" class="btn-developer">
+        <i class="fa-solid fa-house-user"></i> 개발자 페이지
+    </a>
+</div>
 </div>
 
 <div id="applyModal">
