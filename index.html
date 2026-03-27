@@ -131,6 +131,8 @@
             font-weight: bold;
             text-align: center;
             transition: transform 0.2s, background 0.2s;
+            cursor: pointer;
+            border: none;
         }
 
         .btn-apply:hover {
@@ -148,6 +150,40 @@
         .highlight {
             color: #e67e22;
             font-weight: bold;
+        }
+
+        /* 모달 스타일 */
+        #applyModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+        }
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        .modal-content label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 0.9rem;
         }
     </style>
 </head>
@@ -191,7 +227,28 @@
             </div>
         </div>
 
-        <a href="#" class="btn-apply">챌린지 도전 신청하기</a>
+        <button class="btn-apply">챌린지 도전 신청하기</button>
+    </div>
+</div>
+
+<div id="applyModal">
+    <div class="modal-content">
+        <h2 style="margin-top:0; color:#0046ff;">챌린지 도전 신청</h2>
+        <p style="font-size:0.8rem; color:#666;">기록 확인 후 관리자가 승인하면 상금이 갱신됩니다.</p>
+        
+        <label>스트리머 닉네임</label>
+        <input type="text" id="app-nickname" placeholder="SOOP 닉네임 입력">
+
+        <label>도전 종목</label>
+        <input type="text" id="app-game" placeholder="게임명 또는 종목 입력">
+
+        <label>SOOP 다시보기/클립 링크</label>
+        <input type="url" id="app-link" placeholder="https://ch.sooplive.co.kr/...">
+
+        <div style="margin-top:25px; display:flex; gap:10px;">
+            <button id="btn-close-modal" style="flex:1; padding:12px; border:none; border-radius:8px; background:#eee; cursor:pointer;">취소</button>
+            <button id="btn-submit-app" style="flex:2; padding:12px; border:none; border-radius:8px; background:#0046ff; color:white; font-weight:bold; cursor:pointer;">신청 완료</button>
+        </div>
     </div>
 </div>
 
@@ -201,12 +258,12 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+    import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyApnxX1RXQLG8kiX0mYSVroSp3eATF7Njk",
         authDomain: "streamer-challenge-rwo.firebaseapp.com",
-        databaseURL: "https://streamer-challenge-rwo-default-rtdb.firebaseio.com/", // 스크린샷의 주소 추가
+        databaseURL: "https://streamer-challenge-rwo-default-rtdb.firebaseio.com/",
         projectId: "streamer-challenge-rwo",
         storageBucket: "streamer-challenge-rwo.firebasestorage.app",
         messagingSenderId: "935818900229",
@@ -216,26 +273,24 @@
 
     // Firebase 초기화
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const db = getDatabase(app);
 
-    // 문서 참조 및 UI 요소 선택
-    const challengeDocRef = doc(db, "challenges", "current_challenge");
+    // UI 요소 선택
     const prizeAmountEl = document.querySelector('.prize-amount');
     const timerBadgeEl = document.querySelector('.timer-badge');
+    const modal = document.getElementById('applyModal');
+    const applyBtn = document.querySelector('.btn-apply');
 
     let countdownInterval;
 
-    // 실시간 데이터 감시
-    onSnapshot(challengeDocRef, (docSnap) => {
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-            
-            // 상금 업데이트
+    // 1. 메인 데이터 실시간 감시 (상금, 시간)
+    const challengeRef = ref(db, 'current_challenge');
+    onValue(challengeRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
             if (data.prize !== undefined) {
                 prizeAmountEl.innerHTML = `💎 ${data.prize.toLocaleString()}<span>개</span>`;
             }
-
-            // 타이머 업데이트
             if (data.expiryDate) {
                 if (countdownInterval) clearInterval(countdownInterval);
                 startCountdown(data.expiryDate);
@@ -245,9 +300,10 @@
         }
     });
 
-    // 카운트다운 로직
+    // 2. 카운트다운 함수
     function startCountdown(expiryTimestamp) {
-        const targetDate = expiryTimestamp.toDate();
+        // Realtime DB에 저장된 숫자를 그대로 Date 객체로 변환
+        const targetDate = new Date(expiryTimestamp);
 
         const updateTimer = () => {
             const now = new Date();
@@ -271,6 +327,44 @@
         countdownInterval = setInterval(updateTimer, 1000);
         updateTimer();
     }
+
+    // 3. 모달 제어 로직
+    applyBtn.onclick = () => modal.style.display = 'flex';
+    document.getElementById('btn-close-modal').onclick = () => modal.style.display = 'none';
+
+    // 4. 도전 신청 데이터 전송 (로그인 불필요)
+    document.getElementById('btn-submit-app').onclick = async () => {
+        const nickname = document.getElementById('app-nickname').value;
+        const game = document.getElementById('app-game').value;
+        const link = document.getElementById('app-link').value;
+
+        if (!nickname || !game || !link) {
+            alert("모든 항목을 올바르게 입력해주세요.");
+            return;
+        }
+
+        try {
+            const appRef = ref(db, 'applications');
+            const newAppRef = push(appRef); // 고유 키 생성
+            await set(newAppRef, {
+                nickname: nickname,
+                game: game,
+                link: link,
+                timestamp: Date.now(),
+                status: 'pending'
+            });
+
+            alert("성공적으로 신청되었습니다! 관리자 확인 후 반영됩니다.");
+            modal.style.display = 'none';
+            // 입력창 초기화
+            document.getElementById('app-nickname').value = "";
+            document.getElementById('app-game').value = "";
+            document.getElementById('app-link').value = "";
+        } catch (error) {
+            console.error(error);
+            alert("오류가 발생했습니다. 다시 시도해주세요.");
+        }
+    };
 </script>
 
 </body>
