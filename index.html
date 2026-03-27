@@ -35,65 +35,71 @@
         header p { opacity: 0.8; font-weight: 300; margin-top: 10px; font-size: 0.9rem; }
 
         .container {
-            max-width: 900px;
-            margin: -30px auto 50px;
-            padding: 0 20px;
-        }
+        max-width: 1000px; /* PC에서 너무 퍼지지 않게 적절한 너비 설정 */
+        margin: -40px auto 60px;
+        padding: 0 20px;
+        box-sizing: border-box;
+    }
 
         /* 기존 .intro-section 및 .step-container 관련 내용을 아래로 교체하세요 */
 
 .intro-container {
-    background: var(--card-bg);
-    border-radius: 20px;
-    padding: 40px 30px;
-    margin-bottom: 30px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    word-break: keep-all; /* 단어 단위 줄바꿈으로 가독성 향상 */
-    overflow: hidden; /* 영역 밖으로 나가는 것 방지 */
-}
+        background: var(--card-bg);
+        border-radius: 24px;
+        padding: 50px 40px;
+        margin-bottom: 30px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+        text-align: center; /* PC에서는 중앙 정렬이 더 안정적임 */
+    }
 
 .intro-container h2 {
-    font-size: 1.5rem;
-    font-weight: 800;
-    margin-bottom: 15px;
-    color: #1a1a1a;
-    line-height: 1.4;
-}
+        font-size: 1.8rem;
+        word-break: keep-all;
+        margin-bottom: 15px;
+    }
 
 .intro-container .main-desc {
-    font-size: 1rem;
-    color: #666;
-    margin-bottom: 35px;
-}
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 50px;
+    }
 
 /* 스텝 레이아웃 핵심 수정 */
 .step-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 20px;
-    flex-wrap: wrap; /* 공간이 부족하면 자동으로 아래로 내려감 */
-}
+        display: flex;
+        justify-content: space-between;
+        align-items: center; /* 화살표와 수평 맞춤 */
+        gap: 15px;
+    }
 
 .step-box {
-    flex: 1;
-    min-width: 220px; /* 각 칸의 최소 너비 확보 */
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
+        flex: 1;
+        background: #f8f9ff;
+        padding: 25px 20px;
+        border-radius: 16px;
+        min-height: 140px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        transition: transform 0.3s;
+    }
+
+    .step-box:hover { transform: translateY(-5px); }
 
 .step-num {
-    font-size: 1.2rem;
-    font-weight: 900;
-    color: #eee; /* 숫자 강조를 약간 낮춤 */
-}
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+        opacity: 0.5;
+    }
 
 .step-title {
-    font-weight: bold;
-    font-size: 1.1rem;
-    color: var(--primary-color);
-}
+        font-size: 1.15rem;
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #1a1a1a;
+    }
 
 .step-info {
     font-size: 0.9rem;
@@ -101,10 +107,30 @@
     line-height: 1.5;
 }
 
-@media (max-width: 768px) {
-    .step-wrapper { flex-direction: column; gap: 25px; }
-    .step-box { min-width: 100%; }
-}
+        .step-arrow {
+        color: #dee2e6;
+        font-size: 1.2rem;
+    }
+
+@media (max-width: 850px) {
+        .step-wrapper {
+            flex-direction: column;
+            gap: 15px;
+        }
+        .step-arrow {
+            transform: rotate(90deg); /* 화살표를 아래 방향으로 회전 */
+            margin: 5px 0;
+        }
+        .step-box {
+            width: 100%;
+            min-height: auto;
+            padding: 20px;
+        }
+        .rule-grid, .example-grid {
+            grid-template-columns: 1fr;
+        }
+        header h1 { font-size: 1.8rem; }
+    }
 
         .prize-card {
             background: var(--card-bg);
@@ -138,7 +164,12 @@
             margin-bottom: 30px;
         }
 
-        .rule-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 30px; }
+        .rule-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 25px;
+        margin-top: 30px;
+    }
         .rule-item { padding: 20px; border-radius: 15px; background: #f9f9f9; border-left: 5px solid var(--primary-color); }
         .rule-item h3 { margin-top: 0; color: var(--primary-color); display: flex; align-items: center; gap: 10px; font-size: 1rem; }
         .rule-item p { margin: 0; font-size: 0.9rem; color: #555; }
@@ -146,7 +177,11 @@
         /* 게임 예시 섹션 추가 */
         .example-section { margin-top: 40px; }
         .example-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
-        .example-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .example-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
         .example-card { background: white; padding: 15px; border-radius: 12px; border: 1px solid #eee; }
         .ex-tag { font-size: 0.7rem; font-weight: bold; color: #999; text-transform: uppercase; }
         .ex-game { font-weight: bold; font-size: 1rem; display: block; margin: 4px 0; }
@@ -187,29 +222,33 @@
 </header>
 
 <div class="intro-container">
-    <h2>"누구도 깨지 못한 7일, 그 상금의 주인공이 되세요"</h2>
-    <p class="main-desc">리셋 위크는 스트리머들이 특정 종목의 최고 기록에 도전하는 무한 경쟁 챌린지입니다.</p>
-    
-    <div class="step-wrapper">
-        <div class="step-box">
-            <span class="step-num">1</span>
-            <span class="step-title">기록 경신</span>
-            <span class="step-info">기존 기록을 깨고<br>증빙 링크를 제출하세요.</span>
-        </div>
+        <h2>"누구도 깨지 못한 7일, 그 상금의 주인공이 되세요"</h2>
+        <p class="main-desc">리셋 위크는 스트리머들이 특정 종목의 최고 기록에 도전하는 무한 경쟁 챌린지입니다.</p>
+        
+        <div class="step-wrapper">
+            <div class="step-box">
+                <span class="step-num">STEP 01</span>
+                <span class="step-title">기록 경신</span>
+                <span class="step-info">기존 기록을 깨고<br>증빙 링크를 제출하세요.</span>
+            </div>
 
-        <div class="step-box">
-            <span class="step-num">2</span>
-            <span class="step-title">타이머 리셋</span>
-            <span class="step-info">승인 즉시 상금 추가!<br>시간은 다시 7일로 리셋.</span>
-        </div>
+            <div class="step-arrow"><i class="fa-solid fa-chevron-right"></i></div>
 
-        <div class="step-box">
-            <span class="step-num">3</span>
-            <span class="step-title">상금 획득</span>
-            <span class="step-info">7일간 아무도 못 깨면<br>누적 상금은 당신의 것!</span>
+            <div class="step-box">
+                <span class="step-num">STEP 02</span>
+                <span class="step-title">타이머 리셋</span>
+                <span class="step-info">승인 즉시 상금 추가!<br>시간은 다시 7일로 리셋.</span>
+            </div>
+
+            <div class="step-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+
+            <div class="step-box">
+                <span class="step-num">STEP 03</span>
+                <span class="step-title">상금 획득</span>
+                <span class="step-info">7일간 아무도 못 깨면<br>누적 상금은 당신의 것!</span>
+            </div>
         </div>
     </div>
-</div>
 
     <div class="prize-card">
         <div class="timer-badge" id="timer-display"><i class="fa-solid fa-stopwatch"></i> 연결 중...</div>
