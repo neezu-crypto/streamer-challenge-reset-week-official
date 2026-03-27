@@ -311,11 +311,60 @@
         max-width: none;
     }
 }
+    /* 헤더 상단 배너 스타일 */
+.header-top-banner {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.1); /* 반투명 배경 */
+    padding: 8px 16px;
+    border-radius: 50px;
+    text-decoration: none;
+    color: #00ff88; /* 강조 포인트 컬러 */
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    transition: all 0.3s ease;
+}
+
+.header-top-banner:hover {
+    background: rgba(0, 255, 136, 0.15);
+    transform: translateY(-2px);
+    border-color: #00ff88;
+}
+
+.badge-new {
+    background: #00ff88;
+    color: #1a1a1a;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 800;
+}
+
+.header-top-banner i {
+    font-size: 1rem;
+}
+
+/* 모바일 대응 */
+@media (max-width: 600px) {
+    .header-top-banner {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+    }
+}
     </style>
 </head>
 <body>
 
 <header>
+    <a href="https://neezu-crypto.github.io/soop-stock-market/" target="_blank" class="header-top-banner">
+        <span class="badge-new">NEW</span>
+        <i class="fa-solid fa-chart-line"></i> 
+        스트리머 주식시장 게임 바로가기
+        <i class="fa-solid fa-arrow-right"></i>
+    </a>
     <p>The Streamer's Challenge</p>
     <h1>스트리머의 도전: 리셋 위크</h1>
 </header>
