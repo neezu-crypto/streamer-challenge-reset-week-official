@@ -746,9 +746,7 @@ let countdownInterval;
     const challengeRef = ref(db, 'current_challenge');
 
     // HTML 요소 미리 선택 (상단에 선언되어 있지 않다면 추가하세요)
-const challengerNameEl = document.getElementById('challenger-name');
-const challengeGameEl = document.getElementById('challenge-game');
-const challengeLinkEl = document.getElementById('challenge-link');onValue(ref(db, 'current_challenge'), (snapshot) => {
+    onValue(ref(db, 'current_challenge'), (snapshot) => {
     const data = snapshot.val();
     if (data) {
         if (data.prize !== undefined) prizeAmountEl.innerHTML = `💎 ${data.prize.toLocaleString()}<span>개</span>`;
