@@ -299,6 +299,78 @@
     .step-container { flex-direction: column; }
     .step-arrow { transform: rotate(90deg); margin: 10px 0; }
 }
+
+    .example-section {
+    padding: 40px 20px;
+    background: #f8f9fa;
+}
+
+.example-container {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.section-title {
+    font-size: 1.3rem;
+    color: #333;
+    margin-bottom: 25px;
+}
+
+.example-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.example-card {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+    transition: transform 0.2s;
+}
+
+.example-card:hover {
+    transform: translateY(-5px);
+}
+
+.ex-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #eef2ff;
+    color: var(--primary-color);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.example-card h4 {
+    margin: 5px 0;
+    font-size: 1rem;
+    color: #222;
+}
+
+.example-card p {
+    font-size: 0.85rem;
+    color: #777;
+    margin: 0;
+}
+
+.ex-notice {
+    margin-top: 25px;
+    font-size: 0.85rem;
+    color: #999;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .example-grid {
+        grid-template-columns: 1fr 1fr; /* 모바일에선 2열로 배치 */
+    }
+}
     </style>
 </head>
 <body>
@@ -370,6 +442,35 @@
         <button class="btn-apply">챌린지 도전 신청하기</button>
     </div>
 </div>
+
+    <section class="example-section">
+    <div class="example-container">
+        <h3 class="section-title"><i class="fa-solid fa-lightbulb"></i> 이런 종목들이 도전 가능해요!</h3>
+        <div class="example-grid">
+            <div class="example-card">
+                <div class="ex-badge">종합 게임</div>
+                <h4>항아리 게임 (Getting Over It)</h4>
+                <p>최단 시간 클리어 기록 경신</p>
+            </div>
+            <div class="example-card">
+                <div class="ex-badge">FPS / 배틀로얄</div>
+                <h4>배틀그라운드</h4>
+                <p>솔로 모드 최다 킬 우승 기록</p>
+            </div>
+            <div class="example-card">
+                <div class="ex-badge">인디 / 전략</div>
+                <h4>슬레이 더 스파이어</h4>
+                <p>고승천 최단 시간 승리 기록</p>
+            </div>
+            <div class="example-card">
+                <div class="ex-badge">기타 종목</div>
+                <h4>수박 게임</h4>
+                <p>최종 점수 신기록 달성</p>
+            </div>
+        </div>
+        <p class="ex-notice">* SOOP에서 방송 이력이 있는 종목이라면 무엇이든 가능합니다!</p>
+    </div>
+</section>
 
 <div id="applyModal">
     <div class="modal-content">
