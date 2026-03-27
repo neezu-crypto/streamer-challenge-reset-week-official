@@ -674,14 +674,9 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    const prizeAmountEl = document.getElementById('prize-display');
-    const timerBadgeEl = document.getElementById('timer-display');
-    const modal = document.getElementById('applyModal');
-    const applyBtn = document.querySelector('.btn-apply');
-
-    let countdownInterval;
-
-    // 스크립트 태그 최상단에 배치
+    // ------------------------------------------
+// 1. 광고 모달 관련 함수 (전역 등록)
+// ------------------------------------------
 window.openAdModal = function(side) { 
     const positionInput = document.getElementById('ad-position-value');
     const modal = document.getElementById('adModal');
@@ -689,7 +684,7 @@ window.openAdModal = function(side) {
     if (positionInput && modal) {
         positionInput.value = side; 
         modal.style.display = 'block';
-        console.log("모달 열림:", side); // 테스트용 로그
+        console.log("모달 열림:", side);
     } else {
         console.error("ad-position-value 또는 adModal 요소를 찾을 수 없습니다.");
     }
@@ -699,6 +694,26 @@ window.closeAdModal = function() {
     const modal = document.getElementById('adModal');
     if (modal) modal.style.display = 'none';
 };
+
+    window.calculateAdPrice = function() {
+    const days = document.getElementById('ad-days').value;
+    const priceDisplay = document.getElementById('ad-price-display');
+    const totalPrice = (days > 0) ? days * 50 : 0;
+    priceDisplay.innerText = `총 결제 예정 금액: 💎 ${totalPrice.toLocaleString()}개`;
+};
+
+// ------------------------------------------
+// 2. 챌린지 및 도전자 로직
+// ------------------------------------------
+const prizeAmountEl = document.getElementById('prize-display');
+const timerBadgeEl = document.getElementById('timer-display');
+const challengerNameEl = document.getElementById('challenger-name');
+const challengeGameEl = document.getElementById('challenge-game');
+const challengeLinkEl = document.getElementById('challenge-link');
+const applyModal = document.getElementById('applyModal');
+const applyBtn = document.querySelector('.btn-apply');
+
+let countdownInterval;
 
     // 2. 카운트다운 로직
     function startClientCountdown(expiryTimestamp) {
@@ -725,36 +740,21 @@ window.closeAdModal = function() {
         updateTimer();
     }
 
+    
+
     // 1. 실시간 데이터 감시
     const challengeRef = ref(db, 'current_challenge');
 
     // HTML 요소 미리 선택 (상단에 선언되어 있지 않다면 추가하세요)
 const challengerNameEl = document.getElementById('challenger-name');
 const challengeGameEl = document.getElementById('challenge-game');
-const challengeLinkEl = document.getElementById('challenge-link');
-    
-    onValue(challengeRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            if (data.prize !== undefined) {
-                prizeAmountEl.innerHTML = `💎 ${data.prize.toLocaleString()}<span>개</span>`;
-            }
-            if (data.expiryDate) {
-                if (countdownInterval) clearInterval(countdownInterval);
-                startClientCountdown(data.expiryDate);
-            }
-
-            // --- 여기서부터 도전자 정보 업데이트 추가 ---
-        
-        // 닉네임 및 종목 업데이트
-        if (challengerNameEl) {
-            challengerNameEl.innerText = data.nickname || "도전자 없음";
-        }
-        if (challengeGameEl) {
-            challengeGameEl.innerText = data.gameTitle || "종목 미정";
-        }
-
-        // 증빙 링크 업데이트 (링크가 있을 때만 노출)
+const challengeLinkEl = document.getElementById('challenge-link');onValue(ref(db, 'current_challenge'), (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+        if (data.prize !== undefined) prizeAmountEl.innerHTML = `💎 ${data.prize.toLocaleString()}<span>개</span>`;
+        if (data.expiryDate) startClientCountdown(data.expiryDate);
+        if (challengerNameEl) challengerNameEl.innerText = data.nickname || "도전자 없음";
+        if (challengeGameEl) challengeGameEl.innerText = data.gameTitle || "종목 미정";
         if (challengeLinkEl) {
             if (data.proofLink && data.proofLink.startsWith('http')) {
                 challengeLinkEl.href = data.proofLink;
@@ -763,82 +763,47 @@ const challengeLinkEl = document.getElementById('challenge-link');
                 challengeLinkEl.style.display = "none";
             }
         }
-        // ------------------------------------------
-        } else {
-            timerBadgeEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> 데이터 없음`;
-        // 데이터가 없을 때 기본값 처리
-        if (challengerNameEl) challengerNameEl.innerText = "대기 중";
-        if (challengeGameEl) challengeGameEl.innerText = "종목 확인 중";
-        if (challengeLinkEl) challengeLinkEl.style.display = "none";
-        }
-    });
+    }
+});
 
-    // 3. 모달 제어
-    applyBtn.onclick = () => modal.style.display = 'flex';
-    document.getElementById('btn-close-modal').onclick = () => modal.style.display = 'none';
+// 챌린지 신청 모달 제어
+if (applyBtn) applyBtn.onclick = () => applyModal.style.display = 'flex';
+const closeApplyModalBtn = document.getElementById('btn-close-modal');
+if (closeApplyModalBtn) closeApplyModalBtn.onclick = () => applyModal.style.display = 'none';
 
-    // 4. 도전 신청
-    document.getElementById('btn-submit-app').onclick = async () => {
-        const nickname = document.getElementById('app-nickname').value;
-        const game = document.getElementById('app-game').value;
-        const link = document.getElementById('app-link').value;
+document.getElementById('btn-submit-app').onclick = async () => {
+    const nickname = document.getElementById('app-nickname').value;
+    const game = document.getElementById('app-game').value;
+    const link = document.getElementById('app-link').value;
 
-        if (!nickname || !game || !link) {
-            alert("모든 항목을 입력해주세요.");
-            return;
-        }
+    if (!nickname || !game || !link) { alert("모든 항목을 입력해주세요."); return; }
 
-        try {
-            const appRef = ref(db, 'applications');
-            const newAppRef = push(appRef);
-            await set(newAppRef, {
-                nickname, game, link,
-                timestamp: Date.now(),
-                status: 'pending'
-            });
-            alert("신청되었습니다! 관리자 승인 후 반영됩니다.");
-            modal.style.display = 'none';
-            document.querySelectorAll('#applyModal input').forEach(i => i.value = "");
-        } catch (error) {
-            console.error(error);
-            alert("오류가 발생했습니다.");
-        }
-    };
+    try {
+        await set(push(ref(db, 'applications')), {
+            nickname, game, link,
+            timestamp: Date.now(),
+            status: 'pending'
+        });
+        alert("신청되었습니다!");
+        applyModal.style.display = 'none';
+        document.querySelectorAll('#applyModal input').forEach(i => i.value = "");
+    } catch (e) { alert("오류 발생"); }
+};
 
-    const cursorTip = document.getElementById('mouse-cursor-tip');
-
-    // 초기 상태 강제 설정 (HTML 로드 시)
+// ------------------------------------------
+// 4. 마우스 커서 팁 로직
+// ------------------------------------------
+const cursorTip = document.getElementById('mouse-cursor-tip');
 if (cursorTip) {
     cursorTip.style.display = 'none';
-}
-
-window.addEventListener('mousemove', (e) => {
-    // 1. 숨겨져 있다면 나타나게 하기
-    if (cursorTip.style.display === 'none') {
+    window.addEventListener('mousemove', (e) => {
         cursorTip.style.display = 'block';
-    }
-
-    // 2. 위치 업데이트 (transform 대신 left/top 직접 조작 시 transition 간섭 주의)
-    cursorTip.style.left = e.clientX + 'px';
-    cursorTip.style.top = e.clientY + 'px';
-});
-
-window.addEventListener('mouseout', (e) => {
-    // 화면을 완전히 벗어날 때만 숨김
-    if (!e.relatedTarget || e.relatedTarget.nodeName === "HTML") {
-        cursorTip.style.display = 'none';
-    }
-});
-
-    // 모달 닫기
-function closeAdModal() { document.getElementById('adModal').style.display = 'none'; }
-
-// 실시간 단가 계산 (1일당 50개)
-function calculateAdPrice() {
-    const days = document.getElementById('ad-days').value;
-    const priceDisplay = document.getElementById('ad-price-display');
-    const totalPrice = (days > 0) ? days * 50 : 0;
-    priceDisplay.innerText = `총 결제 예정 금액: 💎 ${totalPrice.toLocaleString()}개`;
+        cursorTip.style.left = e.clientX + 'px';
+        cursorTip.style.top = e.clientY + 'px';
+    });
+    window.addEventListener('mouseout', (e) => {
+        if (!e.relatedTarget || e.relatedTarget.nodeName === "HTML") cursorTip.style.display = 'none';
+    });
 }
 
 // 광고 신청 제출
@@ -945,12 +910,6 @@ onValue(ref(db, 'active_ads/right'), (snapshot) => {
         rightBannerBox.onclick = () => openAdModal('right');
     }
 });
-
-    // 1. 모달 열 때 위치 정보를 저장함
-function openAdModal(side) { 
-    document.getElementById('ad-position-value').value = side; // 'left' 또는 'right' 저장
-    document.getElementById('adModal').style.display = 'block'; 
-}
 </script>
 
 </body>
