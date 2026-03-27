@@ -212,6 +212,41 @@
             .step-arrow { display: none; }
             .rule-grid, .example-grid { grid-template-columns: 1fr; }
         }
+
+        /* 규칙 섹션 내부의 안내 문구 스타일 */
+    .win-notice {
+        grid-column: span 2; /* PC에서 가로로 길게 차지 */
+        background: #fff8e1; /* 연한 노란색 배경으로 강조 */
+        border: 1px dashed #ffcc00;
+        padding: 20px;
+        border-radius: 12px;
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .win-notice i {
+        font-size: 1.5rem;
+        color: #ffa000;
+    }
+
+    .win-notice p {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: bold;
+        color: #856404;
+        line-height: 1.5;
+    }
+
+    /* 모바일에서는 안내 문구도 1열로 */
+    @media (max-width: 850px) {
+        .win-notice {
+            grid-column: span 1;
+            flex-direction: column;
+            text-align: center;
+        }
+    }
     </style>
 </head>
 <body>
@@ -277,6 +312,13 @@
                 <h3><i class="fa-solid fa-trophy"></i> 최종 승리</h3>
                 <p>마지막 기록 경신 이후 일주일 동안 기록이 깨지지 않으면 최종 상금을 획득합니다.</p>
             </div>
+            <div class="win-notice">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+            <p>
+                7일간 새로 갱신되는 기록이 없을 경우, 챌린지는 종료되며 <br>
+                그동안 누적된 모든 상금은 <span style="color: #d32f2f;">리셋 위크 관리자가 최종 승자에게 직접 수여</span>합니다.
+            </p>
+        </div>
         </div>
 
         <div class="example-section">
