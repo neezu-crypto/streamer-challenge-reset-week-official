@@ -6,59 +6,74 @@
     <title>리셋 위크 - 관리자 패널</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { font-family: 'Pretendard', sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .admin-card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        body { font-family: 'Pretendard', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .admin-container { width: 100%; max-width: 600px; }
+        .admin-card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; margin-bottom: 20px; }
         h1 { color: #0046ff; margin-bottom: 20px; font-size: 1.5rem; }
-        .info-group { background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: left; }
+        .info-group { background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: left; border-left: 5px solid #0046ff; }
         .info-group p { margin: 5px 0; font-size: 0.9rem; color: #666; }
-        .info-group b { color: #333; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
         button { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; margin-top: 10px; }
         .btn-google { background: #4285F4; color: white; }
         .btn-update { background: #0046ff; color: white; }
         .btn-reset { background: #ff4757; color: white; }
-        .btn-logout { background: #666; color: white; font-size: 0.8rem; margin-top: 20px; }
-        #admin-controls { display: none; }
+        .btn-logout { background: #666; color: white; font-size: 0.8rem; width: auto; padding: 8px 15px; margin-top: 20px; }
+        
+        /* 신청 리스트 스타일 */
+        .app-list { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .app-item { border-bottom: 1px solid #eee; padding: 15px 0; text-align: left; }
+        .app-item:last-child { border-bottom: none; }
+        .app-item b { color: #0046ff; }
+        .app-item p { margin: 5px 0; font-size: 0.85rem; color: #555; overflow-wrap: break-word; }
+        .btn-approve { background: #2ed573; color: white; width: auto; padding: 5px 15px; font-size: 0.8rem; margin-top: 5px; }
+        .btn-delete { background: #ff4757; color: white; width: auto; padding: 5px 15px; font-size: 0.8rem; margin-top: 5px; margin-left: 5px; }
+        
+        #admin-content { display: none; width: 100%; }
     </style>
 </head>
 <body>
 
-<div class="admin-card">
-    <h1><i class="fa-solid fa-lock"></i> 관리자 패널</h1>
+<div class="admin-container">
+    <div class="admin-card">
+        <h1><i class="fa-solid fa-lock"></i> 관리자 패널</h1>
 
-    <div id="login-section">
-        <p>관리자 구글 계정으로 로그인하세요.</p>
-        <button class="btn-google" id="btn-login"><i class="fa-brands fa-google"></i> Google로 로그인</button>
-    </div>
-
-    <div id="admin-controls">
-        <div class="info-group">
-            <p>현재 접속: <b id="user-email">사용자</b></p>
-            <p>현재 DB 상금: <b id="current-prize-display">--</b>개</p>
-            <p>현재 마감일: <b id="current-expiry-display">--</b></p>
+        <div id="login-section">
+            <p>skftodwocks2@gmail.com 계정으로 로그인하세요.</p>
+            <button class="btn-google" id="btn-login"><i class="fa-brands fa-google"></i> Google 로그인</button>
         </div>
 
-        <label>상금 수정 (숫자만)</label>
-        <input type="number" id="prize-input" placeholder="예: 200">
-        <button class="btn-update" id="btn-update-prize">상금 수정하기 (+100)</button>
-        
-        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
-        
-        <p style="font-size: 0.8rem; color: #ff4757;">* 아래 버튼 클릭 시 타이머가 7일 뒤로 리셋됩니다.</p>
-        <button class="btn-reset" id="btn-reset-timer"><i class="fa-solid fa-rotate"></i> 기록 경신 (7일 리셋)</button>
+        <div id="admin-content">
+            <div class="info-group">
+                <p>접속 계정: <b id="user-email">--</b></p>
+                <p>현재 DB 상금: <b id="current-prize-display">--</b>개</p>
+                <p>마감 일시: <b id="current-expiry-display">--</b></p>
+            </div>
 
-        <button class="btn-logout" id="btn-logout">로그아웃</button>
+            <label style="font-size: 0.8rem; font-weight: bold;">상금 수동 수정</label>
+            <input type="number" id="prize-input">
+            <button class="btn-update" id="btn-update-prize">상금만 수정</button>
+            
+            <button class="btn-reset" id="btn-reset-timer"><i class="fa-solid fa-rotate"></i> 수동 리셋 (상금+100 & 7일 연장)</button>
+            
+            <button class="btn-logout" id="btn-logout">로그아웃</button>
+        </div>
+    </div>
+
+    <div id="app-section" style="display:none;" class="app-list">
+        <h3 style="margin-top:0;"><i class="fa-solid fa-list-check"></i> 도전 신청 현황</h3>
+        <div id="app-container">신청 내역을 불러오는 중...</div>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-    import { getFirestore, doc, onSnapshot, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+    import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyApnxX1RXQLG8kiX0mYSVroSp3eATF7Njk",
         authDomain: "streamer-challenge-rwo.firebaseapp.com",
+        databaseURL: "https://streamer-challenge-rwo-default-rtdb.firebaseio.com/",
         projectId: "streamer-challenge-rwo",
         storageBucket: "streamer-challenge-rwo.firebasestorage.app",
         messagingSenderId: "935818900229",
@@ -67,68 +82,116 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const db = getDatabase(app);
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
-    const challengeDocRef = doc(db, "challenges", "current_challenge");
-
-    // UI 요소
+    const adminContent = document.getElementById('admin-content');
     const loginSection = document.getElementById('login-section');
-    const adminControls = document.getElementById('admin-controls');
-    const userEmailText = document.getElementById('user-email');
+    const appSection = document.getElementById('app-section');
 
-    // 1. 인증 상태 감시
+    // 1. 인증 감시
     onAuthStateChanged(auth, (user) => {
-        if (user) {
-            // if (user.email !== "skftodwocks2@gmail.com") { alert("권한이 없습니다."); signOut(auth); return; }
+        if (user && user.email === 'skftodwocks2@gmail.com') {
             loginSection.style.display = 'none';
-            adminControls.style.display = 'block';
-            userEmailText.innerText = user.email;
+            adminContent.style.display = 'block';
+            appSection.style.display = 'block';
+            document.getElementById('user-email').innerText = user.email;
+            loadApplications();
+        } else if (user) {
+            alert("권한이 없는 계정입니다.");
+            signOut(auth);
         } else {
             loginSection.style.display = 'block';
-            adminControls.style.display = 'none';
+            adminContent.style.display = 'none';
+            appSection.style.display = 'none';
         }
     });
 
-    // 2. 로그인/로그아웃
     document.getElementById('btn-login').onclick = () => signInWithPopup(auth, provider);
     document.getElementById('btn-logout').onclick = () => signOut(auth);
 
-    // 3. 실시간 데이터 표시
-    onSnapshot(challengeDocRef, (docSnap) => {
-        if (docSnap.exists()) {
-            const data = docSnap.data();
+    // 2. 메인 데이터 실시간 표시
+    const challengeRef = ref(db, 'current_challenge');
+    onValue(challengeRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
             document.getElementById('current-prize-display').innerText = data.prize;
-            document.getElementById('current-expiry-display').innerText = data.expiryDate.toDate().toLocaleString();
+            document.getElementById('current-expiry-display').innerText = new Date(data.expiryDate).toLocaleString();
             document.getElementById('prize-input').value = data.prize;
         }
     });
 
-    // 4. 상금 수정
+    // 3. 상금 수동 수정
     document.getElementById('btn-update-prize').onclick = async () => {
-        const newPrize = parseInt(document.getElementById('prize-input').value);
-        await updateDoc(challengeDocRef, { prize: newPrize });
+        const val = parseInt(document.getElementById('prize-input').value);
+        await update(challengeRef, { prize: val });
         alert("상금이 수정되었습니다.");
     };
 
-    // 5. 기록 경신 (7일 리셋 + 상금 100개 추가)
-    document.getElementById('btn-reset-timer').onclick = async () => {
-        if(!confirm("새로운 기록자가 승인되었습니까? 상금이 100개 추가되고 시간이 7일로 리셋됩니다.")) return;
-        
-        const prizeInput = document.getElementById('prize-input');
-        const currentPrize = parseInt(prizeInput.value);
+    // 4. 수동 리셋 함수
+    async function resetChallenge() {
+        const snap = await new Promise(resolve => onValue(challengeRef, s => resolve(s), {onlyOnce: true}));
+        const currentPrize = snap.val().prize || 0;
         const nextPrize = currentPrize >= 1000 ? 1000 : currentPrize + 100;
+        const newExpiry = Date.now() + (7 * 24 * 60 * 60 * 1000); // 현재 + 7일
 
-        const newExpiry = new Date();
-        newExpiry.setDate(newExpiry.getDate() + 7); // 7일 뒤
-
-        await updateDoc(challengeDocRef, {
+        await update(challengeRef, {
             prize: nextPrize,
-            expiryDate: Timestamp.fromDate(newExpiry)
+            expiryDate: newExpiry
         });
-        alert("리셋 완료! 상금이 " + nextPrize + "개로 업데이트 되었습니다.");
+    }
+
+    document.getElementById('btn-reset-timer').onclick = async () => {
+        if(confirm("타이머를 7일로 리셋하고 상금을 100개 추가하시겠습니까?")) {
+            await resetChallenge();
+            alert("리셋 완료!");
+        }
     };
+
+    // 5. 신청 목록 로드 및 승인 로직
+    function loadApplications() {
+        const appsRef = ref(db, 'applications');
+        onValue(appsRef, (snapshot) => {
+            const container = document.getElementById('app-container');
+            container.innerHTML = "";
+            const data = snapshot.val();
+
+            if (!data) {
+                container.innerHTML = "<p style='color:#999;'>신청 내역이 없습니다.</p>";
+                return;
+            }
+
+            Object.keys(data).forEach(key => {
+                const app = data[key];
+                const item = document.createElement('div');
+                item.className = 'app-item';
+                item.innerHTML = `
+                    <p><b>스트리머:</b> ${app.nickname} (${app.game})</p>
+                    <p><b>링크:</b> <a href="${app.link}" target="_blank">클립 보기</a></p>
+                    <button class="btn-approve" onclick="approveApp('${key}')">승인(리셋)</button>
+                    <button class="btn-delete" onclick="deleteApp('${key}')">삭제</button>
+                `;
+                container.appendChild(item);
+            });
+        });
+    }
+
+    // 승인: 상금 올리고 타이머 리셋 후 신청 내역 삭제
+    window.approveApp = async (key) => {
+        if(confirm("이 신청을 승인하시겠습니까? 상금이 추가되고 타이머가 리셋됩니다.")) {
+            await resetChallenge();
+            await remove(ref(db, `applications/${key}`));
+            alert("승인 및 리셋 완료!");
+        }
+    };
+
+    window.deleteApp = async (key) => {
+        if(confirm("삭제하시겠습니까?")) {
+            await remove(ref(db, `applications/${key}`));
+        }
+    };
+
 </script>
 
 </body>
