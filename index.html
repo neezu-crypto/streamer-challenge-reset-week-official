@@ -357,11 +357,16 @@
     font-size: 0.85rem;
     font-weight: 600;
     white-space: nowrap;
-    z-index: 9999; /* 최상단 배치 */
-    pointer-events: none; /* 중요: 마우스 클릭을 방해하지 않음 */
-    transform: translate(15px, 15px); /* 마우스 커서에서 약간 오른쪽 아래로 배치 */
-    transition: transform 0.1s ease-out; /* 부드러운 따라오기 효과 */
-    display: none; /* 초기 상태는 숨김 (마우스 움직이면 나타남) */
+    z-index: 9999;
+    pointer-events: none;
+    
+    /* 중요: transform 위치를 고정하고 left/top으로 이동 */
+    transform: translate(15px, 15px); 
+    
+    /* transition은 위치(left/top)가 아니라 나타날 때만 사용 */
+    transition: opacity 0.2s ease-out; 
+    
+    display: none; 
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
@@ -661,21 +666,27 @@ const challengeLinkEl = document.getElementById('challenge-link');
 
     const cursorTip = document.getElementById('mouse-cursor-tip');
 
+    // 초기 상태 강제 설정 (HTML 로드 시)
+if (cursorTip) {
+    cursorTip.style.display = 'none';
+}
+
 window.addEventListener('mousemove', (e) => {
-    // 첫 움직임에 말풍선 노출
-    if (cursorTip.style.display !== 'block') {
+    // 1. 숨겨져 있다면 나타나게 하기
+    if (cursorTip.style.display === 'none') {
         cursorTip.style.display = 'block';
     }
 
-    // 마우스 좌표에 맞춰 이동 (X, Y 좌표 반영)
-    // 스타일의 transform: translate(15px, 15px)와 결합되어 커서를 가리지 않습니다.
+    // 2. 위치 업데이트 (transform 대신 left/top 직접 조작 시 transition 간섭 주의)
     cursorTip.style.left = e.clientX + 'px';
     cursorTip.style.top = e.clientY + 'px';
 });
 
-// 마우스가 화면을 벗어나면 숨김 처리
-window.addEventListener('mouseout', () => {
-    cursorTip.style.display = 'none';
+window.addEventListener('mouseout', (e) => {
+    // 화면을 완전히 벗어날 때만 숨김
+    if (!e.relatedTarget || e.relatedTarget.nodeName === "HTML") {
+        cursorTip.style.display = 'none';
+    }
 });
 </script>
 
