@@ -271,11 +271,9 @@
         measurementId: "G-BMMMRWSDD2"
     };
 
-    // Firebase 초기화
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // UI 요소 선택
     const prizeAmountEl = document.querySelector('.prize-amount');
     const timerBadgeEl = document.querySelector('.timer-badge');
     const modal = document.getElementById('applyModal');
@@ -283,30 +281,31 @@
 
     let countdownInterval;
 
-    // 1. 메인 데이터 실시간 감시 (상금, 시간)
+    // 1. 실시간 데이터 감시 (DB 값이 바뀔 때만 한 번 실행됨)
     const challengeRef = ref(db, 'current_challenge');
     onValue(challengeRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
+            // 상금 텍스트 업데이트
             if (data.prize !== undefined) {
                 prizeAmountEl.innerHTML = `💎 ${data.prize.toLocaleString()}<span>개</span>`;
             }
+            // 종료 시간 업데이트 및 클라이언트 사이드 카운트다운 시작
             if (data.expiryDate) {
                 if (countdownInterval) clearInterval(countdownInterval);
-                startCountdown(data.expiryDate);
+                startClientCountdown(data.expiryDate);
             }
         } else {
             timerBadgeEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> 데이터 없음`;
         }
     });
 
-    // 2. 카운트다운 함수
-    function startCountdown(expiryTimestamp) {
-        // Realtime DB에 저장된 숫자를 그대로 Date 객체로 변환
-        const targetDate = new Date(expiryTimestamp);
+    // 2. 클라이언트 사이드 카운트다운 (한 번 받은 데이터로 로컬에서 계산)
+    function startClientCountdown(expiryTimestamp) {
+        const targetDate = new Date(expiryTimestamp).getTime();
 
         const updateTimer = () => {
-            const now = new Date();
+            const now = new Date().getTime();
             const diff = targetDate - now;
 
             if (diff <= 0) {
@@ -316,53 +315,53 @@
                 return;
             }
 
-            const totalHours = Math.floor(diff / (1000 * 60 * 60));
+            const hours = Math.floor(diff / (1000 * 60 * 60));
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
             timerBadgeEl.style.background = "#ff4757";
-            timerBadgeEl.innerHTML = `<i class="fa-solid fa-stopwatch"></i> 남은 시간: ${String(totalHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            timerBadgeEl.innerHTML = `<i class="fa-solid fa-stopwatch"></i> 남은 시간: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         };
 
+        // 1초마다 로컬 메모리에서 계산
         countdownInterval = setInterval(updateTimer, 1000);
         updateTimer();
     }
 
-    // 3. 모달 제어 로직
+    // 3. 모달 제어
     applyBtn.onclick = () => modal.style.display = 'flex';
     document.getElementById('btn-close-modal').onclick = () => modal.style.display = 'none';
 
-    // 4. 도전 신청 데이터 전송 (로그인 불필요)
+    // 4. 도전 신청 (누구나 가능)
     document.getElementById('btn-submit-app').onclick = async () => {
         const nickname = document.getElementById('app-nickname').value;
         const game = document.getElementById('app-game').value;
         const link = document.getElementById('app-link').value;
 
         if (!nickname || !game || !link) {
-            alert("모든 항목을 올바르게 입력해주세요.");
+            alert("모든 항목을 입력해주세요.");
             return;
         }
 
         try {
             const appRef = ref(db, 'applications');
-            const newAppRef = push(appRef); // 고유 키 생성
+            const newAppRef = push(appRef);
             await set(newAppRef, {
-                nickname: nickname,
-                game: game,
-                link: link,
+                nickname,
+                game,
+                link,
                 timestamp: Date.now(),
                 status: 'pending'
             });
 
-            alert("성공적으로 신청되었습니다! 관리자 확인 후 반영됩니다.");
+            alert("신청되었습니다! 관리자 승인 후 반영됩니다.");
             modal.style.display = 'none';
-            // 입력창 초기화
             document.getElementById('app-nickname').value = "";
             document.getElementById('app-game').value = "";
             document.getElementById('app-link').value = "";
         } catch (error) {
             console.error(error);
-            alert("오류가 발생했습니다. 다시 시도해주세요.");
+            alert("오류가 발생했습니다.");
         }
     };
 </script>
