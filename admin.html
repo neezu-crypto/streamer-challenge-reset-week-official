@@ -166,41 +166,75 @@ async function resetChallenge() {
     };
 
     // 5. 신청 목록 로드 및 승인 로직
-    function loadApplications() {
-        const appsRef = ref(db, 'applications');
-        onValue(appsRef, (snapshot) => {
-            const container = document.getElementById('app-container');
-            container.innerHTML = "";
-            const data = snapshot.val();
+function loadApplications() {
+    const appsRef = ref(db, 'applications');
+    onValue(appsRef, (snapshot) => {
+        const container = document.getElementById('app-container');
+        container.innerHTML = "";
+        const data = snapshot.val();
 
-            if (!data) {
-                container.innerHTML = "<p style='color:#999;'>신청 내역이 없습니다.</p>";
-                return;
-            }
-
-            Object.keys(data).forEach(key => {
-                const app = data[key];
-                const item = document.createElement('div');
-                item.className = 'app-item';
-                item.innerHTML = `
-                    <p><b>스트리머:</b> ${app.nickname} (${app.game})</p>
-                    <p><b>링크:</b> <a href="${app.link}" target="_blank">클립 보기</a></p>
-                    <button class="btn-approve" onclick="approveApp('${key}')">승인(리셋)</button>
-                    <button class="btn-delete" onclick="deleteApp('${key}')">삭제</button>
-                `;
-                container.appendChild(item);
-            });
-        });
-    }
-
-    // 승인: 상금 올리고 타이머 리셋 후 신청 내역 삭제
-    window.approveApp = async (key) => {
-        if(confirm("이 신청을 승인하시겠습니까? 상금이 추가되고 타이머가 리셋됩니다.")) {
-            await resetChallenge();
-            await remove(ref(db, `applications/${key}`));
-            alert("승인 및 리셋 완료!");
+        if (!data) {
+            container.innerHTML = "<p style='color:#999;'>신청 내역이 없습니다.</p>";
+            return;
         }
-    };
+
+        Object.keys(data).forEach(key => {
+            const app = data[key];
+            const item = document.createElement('div');
+            item.className = 'app-item';
+            // 버튼 클릭 시 닉네임, 게임, 링크 데이터를 인자로 전달하도록 수정
+            item.innerHTML = `
+                <div style="background:#f9f9f9; padding:15px; border-radius:10px; margin-bottom:10px; border:1px solid #eee;">
+                    <p><b>스트리머:</b> ${app.nickname}</p>
+                    <p><b>도전종목:</b> ${app.game}</p>
+                    <p><b>증빙링크:</b> <a href="${app.link}" target="_blank" style="color:#0046ff;">클립 확인</a></p>
+                    <div style="margin-top:10px;">
+                        <button class="btn-approve" onclick="approveApp('${key}', '${app.nickname}', '${app.game}', '${app.link}')" style="background:#0046ff; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;">승인(정보 업데이트)</button>
+                        <button class="btn-delete" onclick="deleteApp('${key}')" style="background:#ff4757; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; margin-left:5px;">삭제</button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(item);
+        });
+    });
+}
+
+// 승인 로직 수정: 상금/타이머 리셋과 동시에 도전자 정보 업데이트
+window.approveApp = async (key, nickname, game, link) => {
+    if(confirm(`${nickname} 님의 신청을 승인하시겠습니까?\n상금이 추가되고 도전자 정보가 실시간으로 교체됩니다.`)) {
+        try {
+            // 1. 기존 리셋 로직 실행 (상금 +100, 시간 7일 리셋)
+            // 주의: resetChallenge 함수 내부에서 set 대신 update를 쓰거나, 
+            // 여기서 정보를 한꺼번에 set 하는 것이 안전합니다.
+            
+            const challengeRef = ref(db, 'current_challenge');
+            const snapshot = await get(challengeRef);
+            const currentData = snapshot.val();
+            
+            const currentPrize = (currentData && currentData.prize !== undefined) ? currentData.prize : 0;
+            const newPrize = Math.min(currentPrize + 100, 1000);
+            const newExpiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
+
+            // 2. 새로운 도전자 정보와 리셋된 수치를 한꺼번에 DB에 반영
+            await set(challengeRef, {
+                prize: newPrize,
+                expiryDate: newExpiry,
+                nickname: nickname,
+                gameTitle: game,
+                proofLink: link,
+                lastUpdated: Date.now()
+            });
+
+            // 3. 신청 목록에서 해당 데이터 삭제
+            await remove(ref(db, `applications/${key}`));
+            
+            alert("승인 완료! 사용자 페이지에 실시간 반영되었습니다.");
+        } catch (error) {
+            console.error("승인 처리 중 오류:", error);
+            alert("승인 처리에 실패했습니다.");
+        }
+    }
+};
 
     window.deleteApp = async (key) => {
         if(confirm("삭제하시겠습니까?")) {
