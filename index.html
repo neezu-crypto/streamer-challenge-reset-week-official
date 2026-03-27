@@ -350,11 +350,21 @@
     </div>
 
     <div class="prize-card">
-        <div class="timer-badge" id="timer-display"><i class="fa-solid fa-stopwatch"></i> 연결 중...</div>
-        <p style="margin: 0; font-size: 0.9rem; color: #888;">현재 누적 상금</p>
-        <div class="prize-amount" id="prize-display">💎 --<span>개</span></div>
-        <p style="color: #666; font-size: 0.85rem;">갱신될 때마다 <span style="color:#e67e22; font-weight:bold;">+100개</span> (최대 1,000개)</p>
+    <div class="timer-badge" id="timer-display"><i class="fa-solid fa-stopwatch"></i> 연결 중...</div>
+    
+    <div class="challenger-info" style="margin-bottom: 20px; padding: 15px; background: #f8f9ff; border-radius: 15px;">
+        <div style="font-size: 0.85rem; color: #888; margin-bottom: 5px;">현재 도전자</div>
+        <div id="challenger-name" style="font-size: 1.2rem; font-weight: bold; color: var(--primary-color);">대기 중</div>
+        <div id="challenge-game" style="font-size: 0.95rem; color: #555; margin-top: 2px;">종목 확인 중</div>
+        <a id="challenge-link" href="#" target="_blank" style="display: none; margin-top: 10px; font-size: 0.8rem; color: #0046ff; text-decoration: underline;">
+            <i class="fa-solid fa-up-right-from-square"></i> 증빙 기록(클립) 확인
+        </a>
     </div>
+
+    <p style="margin: 0; font-size: 0.9rem; color: #888;">현재 누적 상금</p>
+    <div class="prize-amount" id="prize-display">💎 --<span>개</span></div>
+    <p style="color: #666; font-size: 0.85rem;">갱신될 때마다 <span style="color:#e67e22; font-weight:bold;">+100개</span> (최대 1,000개)</p>
+</div>
 
     <div class="rule-section">
         <h2 style="text-align: center; margin-bottom: 30px; font-weight: 800;">Challenge Rules</h2>
@@ -479,6 +489,12 @@
 
     // 1. 실시간 데이터 감시
     const challengeRef = ref(db, 'current_challenge');
+
+    // HTML 요소 미리 선택 (상단에 선언되어 있지 않다면 추가하세요)
+const challengerNameEl = document.getElementById('challenger-name');
+const challengeGameEl = document.getElementById('challenge-game');
+const challengeLinkEl = document.getElementById('challenge-link');
+    
     onValue(challengeRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
@@ -489,8 +505,33 @@
                 if (countdownInterval) clearInterval(countdownInterval);
                 startClientCountdown(data.expiryDate);
             }
+
+            // --- 여기서부터 도전자 정보 업데이트 추가 ---
+        
+        // 닉네임 및 종목 업데이트
+        if (challengerNameEl) {
+            challengerNameEl.innerText = data.nickname || "도전자 없음";
+        }
+        if (challengeGameEl) {
+            challengeGameEl.innerText = data.gameTitle || "종목 미정";
+        }
+
+        // 증빙 링크 업데이트 (링크가 있을 때만 노출)
+        if (challengeLinkEl) {
+            if (data.proofLink && data.proofLink.startsWith('http')) {
+                challengeLinkEl.href = data.proofLink;
+                challengeLinkEl.style.display = "inline-block";
+            } else {
+                challengeLinkEl.style.display = "none";
+            }
+        }
+        // ------------------------------------------
         } else {
             timerBadgeEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> 데이터 없음`;
+        // 데이터가 없을 때 기본값 처리
+        if (challengerNameEl) challengerNameEl.innerText = "대기 중";
+        if (challengeGameEl) challengeGameEl.innerText = "종목 확인 중";
+        if (challengeLinkEl) challengeLinkEl.style.display = "none";
         }
     });
 
