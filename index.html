@@ -678,8 +678,6 @@
 
     let countdownInterval;
 
-    
-
     // 2. 카운트다운 로직
     function startClientCountdown(expiryTimestamp) {
         const targetDate = new Date(expiryTimestamp).getTime();
@@ -863,6 +861,67 @@ async function submitAdApplication() {
         alert("신청 중 오류가 발생했습니다.");
     }
 }
+
+    // 실시간 광고 배너 업데이트 로직
+const leftBannerBox = document.querySelector('.banner-left');
+
+// 좌측 배너 실시간 업데이트 (데이터 유지, 조건부 숨김)
+onValue(ref(db, 'active_ads/left'), (snapshot) => {
+    const ad = snapshot.val();
+    const now = Date.now();
+    const leftBannerBox = document.querySelector('.banner-left');
+    
+    if (!leftBannerBox) return; // 요소가 없으면 중단
+
+    // 광고 데이터가 존재하고, 만료 시간이 아직 지나지 않은 경우에만 노출
+    if (ad && ad.expiryTimestamp && ad.expiryTimestamp > now) {
+        leftBannerBox.innerHTML = `
+            <a href="${ad.link || '#'}" target="_blank" style="display:block; width:100%; height:100%;">
+                <img src="${ad.imgLink}" alt="광고" style="width:100%; height:100%; object-fit:cover;">
+            </a>
+        `;
+        // 광고 중일 때는 신청 모달이 뜨지 않도록 클릭 이벤트 제거
+        leftBannerBox.onclick = null; 
+    } else {
+        // 데이터가 없거나 기간이 만료된 경우 (DB 삭제 없이 화면만 교체)
+        leftBannerBox.innerHTML = `
+            <div class="ad-placeholder" style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#f1f1f1; color:#999; cursor:pointer; font-size:0.75rem; border:1px dashed #ccc;">
+                <i class="fa-solid fa-plus"></i><br>광고 문의
+            </div>
+        `;
+        // 다시 클릭 시 신청 모달이 뜨도록 설정
+        leftBannerBox.onclick = openAdModal;
+    }
+});
+
+    // 우측 배너 실시간 업데이트 (데이터 유지, 조건부 숨김)
+onValue(ref(db, 'active_ads/right'), (snapshot) => {
+    const ad = snapshot.val();
+    const now = Date.now();
+    const rightBannerBox = document.querySelector('.banner-right');
+    
+    if (!rightBannerBox) return; // 요소가 없으면 중단
+
+    // 광고 데이터가 존재하고, 만료 시간이 아직 지나지 않은 경우에만 노출
+    if (ad && ad.expiryTimestamp && ad.expiryTimestamp > now) {
+        rightBannerBox.innerHTML = `
+            <a href="${ad.link || '#'}" target="_blank" style="display:block; width:100%; height:100%;">
+                <img src="${ad.imgLink}" alt="광고" style="width:100%; height:100%; object-fit:cover;">
+            </a>
+        `;
+        // 광고 중일 때는 신청 모달이 뜨지 않도록 클릭 이벤트 제거
+        rightBannerBox.onclick = null; 
+    } else {
+        // 데이터가 없거나 기간이 만료된 경우 (DB 삭제 없이 화면만 교체)
+        rightBannerBox.innerHTML = `
+            <div class="ad-placeholder" style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#f1f1f1; color:#999; cursor:pointer; font-size:0.75rem; border:1px dashed #ccc;">
+                <i class="fa-solid fa-plus"></i><br>광고 문의
+            </div>
+        `;
+        // 다시 클릭 시 신청 모달이 뜨도록 설정
+        rightBannerBox.onclick = openAdModal;
+    }
+});
 </script>
 
 </body>
