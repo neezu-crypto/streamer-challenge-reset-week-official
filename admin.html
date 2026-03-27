@@ -81,8 +81,7 @@
     // 1. 인증 상태 감시
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            // 본인 이메일 주소를 여기에 넣으세요 (보안용)
-            // if (user.email !== "본인이메일@gmail.com") { alert("권한이 없습니다."); signOut(auth); return; }
+            // if (user.email !== "skftodwocks2@gmail.com") { alert("권한이 없습니다."); signOut(auth); return; }
             loginSection.style.display = 'none';
             adminControls.style.display = 'block';
             userEmailText.innerText = user.email;
