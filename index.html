@@ -189,11 +189,11 @@
         .ex-sub { font-size: 0.8rem; color: #999; margin-top: 5px; }
 
         .btn-apply {
-            display: block; width: 100%; max-width: 300px; margin: 40px auto 0;
-            background: var(--primary-color); color: white; text-decoration: none;
-            padding: 15px 30px; border-radius: 12px; font-size: 1.2rem; font-weight: bold;
-            text-align: center; transition: all 0.2s; cursor: pointer; border: none;
-        }
+    display: flex;       /* block에서 flex로 변경 */
+    width: auto;         /* 고정 너비 해제 */
+    max-width: none;     /* 제한 해제 (부모인 btn-group에서 제어) */
+    margin: 0;           /* 마진 초기화 (부모의 gap 사용) */
+}
         .btn-apply:hover { transform: translateY(-3px); background: #0036cc; box-shadow: 0 5px 15px rgba(0,70,255,0.3); }
 
         footer { text-align: center; padding: 40px; color: #888; font-size: 0.8rem; border-top: 1px solid #eee; background: white; }
@@ -250,31 +250,30 @@
 
         /* 버튼 그룹 레이아웃 */
     .btn-group {
-        display: flex;
-        flex-direction: row; /* PC에서는 가로 정렬 */
-        justify-content: center;
-        gap: 15px;
-        margin-top: 40px;
-        width: 100%;
-    }
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch; /* 두 버튼의 높이를 동일하게 맞춤 */
+    gap: 12px;           /* 버튼 사이 간격 */
+    margin: 40px auto 0; /* 그룹 전체를 중앙으로 배치 */
+    width: 100%;
+    max-width: 520px;    /* 두 버튼 합친 최대 너비 제한 */
+}
 
     .btn-apply, .btn-developer {
-        flex: 1;
-        max-width: 250px;
-        padding: 15px 20px;
-        border-radius: 12px;
-        font-size: 1.1rem;
-        font-weight: bold;
-        text-align: center;
-        text-decoration: none;
-        transition: all 0.2s;
-        cursor: pointer;
-        border: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-    }
+    flex: 1;             /* 공간을 1:1로 정확히 나눔 */
+    height: 56px;        /* 버튼 높이 통일 */
+    padding: 0 20px;     /* 좌우 패딩 */
+    border-radius: 12px;
+    font-size: 1.05rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-sizing: border-box; /* 패딩 포함 크기 계산 */
+    transition: all 0.2s;
+}
 
     /* 도전 신청 버튼 스타일 */
     .btn-apply {
@@ -302,15 +301,16 @@
 
     /* 모바일 대응 */
     @media (max-width: 600px) {
-        .btn-group {
-            flex-direction: column; /* 모바일은 세로 정렬 */
-            align-items: center;
-        }
-        .btn-apply, .btn-developer {
-            max-width: 100%;
-            width: 100%;
-        }
+    .btn-group {
+        flex-direction: column;
+        align-items: center;
+        max-width: 100%;
     }
+    .btn-apply, .btn-developer {
+        width: 100%;
+        max-width: none;
+    }
+}
     </style>
 </head>
 <body>
